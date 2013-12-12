@@ -8,8 +8,6 @@ import cz.uhk.fim.virtualeconomy.communatication.impl.IceListener;
 import cz.uhk.fim.virtualeconomy.communatication.impl.IceSender;
 import cz.uhk.fim.virtualeconomy.container.agents.Agent;
 import cz.uhk.fim.virtualeconomy.model.ContainerEntity;
-import org.ubercraft.statsd.StatsdCounter;
-import org.ubercraft.statsd.StatsdLoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +27,6 @@ abstract public class Container extends LoggedObject {
     private Sender sender = new IceSender();
     private ContainerEntity address;
     private MessagesQueue queue = new MessagesQueue();
-    private StatsdCounter agentsCounter = StatsdLoggerFactory.getLogger("statsd.virtualeconomy.agents.count");
 
     public Container(String host, Integer port) {
         address = new ContainerEntity(host, port);
@@ -57,14 +54,12 @@ abstract public class Container extends LoggedObject {
 
     public void addAgent(Agent agent) {
         getLogger().info("Registering agent {}", agent.getEntity());
-        agentsCounter.infoCount();
         Future future = executor.submit(agent);
         agents.put(agent.getEntity().getId(), future);
     }
 
     public void removeAgent(UUID id) {
         getLogger().info("Removing agent with ID {}", id);
-        agentsCounter.infoCount(-1);
         if (agents.containsKey(id)) {
             Future future = agents.get(id);
             future.cancel(false);

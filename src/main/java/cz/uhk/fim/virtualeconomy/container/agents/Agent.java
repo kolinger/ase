@@ -7,8 +7,6 @@ import cz.uhk.fim.virtualeconomy.container.Container;
 import cz.uhk.fim.virtualeconomy.container.agents.behaviours.Behavior;
 import cz.uhk.fim.virtualeconomy.model.AgentEntity;
 import cz.uhk.fim.virtualeconomy.model.MessageEntity;
-import org.ubercraft.statsd.StatsdCounter;
-import org.ubercraft.statsd.StatsdLoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +20,6 @@ abstract public class Agent extends LoggedObject implements Runnable {
     private AgentEntity entity;
     private Container container;
     private List<Behavior> behaviors = new ArrayList<Behavior>();
-    private StatsdCounter outcomeCounter = StatsdLoggerFactory.getLogger("statsd.virtualeconomy.agents.messages.outcome");
-    private StatsdCounter incomeCounter = StatsdLoggerFactory.getLogger("statsd.virtualeconomy.agents.messages.income");
 
     public Agent(Container container) {
         this.container = container;
@@ -64,14 +60,12 @@ abstract public class Agent extends LoggedObject implements Runnable {
     }
 
     public void send(MessageEntity message) {
-        outcomeCounter.infoCount();
         getLogger().debug("Agent {} sending message {}", getEntity(), message);
         Sender sender = getContainer().getSender();
         sender.send(message);
     }
 
     public MessageEntity receive() {
-        incomeCounter.infoCount();
         MessagesQueue queue = getContainer().getQueue();
         MessageEntity message = queue.search(getEntity().getId());
         getLogger().debug("Agent {} receiving first message {}", getEntity(), message);

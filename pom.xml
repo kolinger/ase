@@ -40,11 +40,6 @@
             <artifactId>jul-to-slf4j</artifactId>
             <version>1.7.5</version>
         </dependency>
-        <dependency>
-            <groupId>org.ubercraft.statsd</groupId>
-            <artifactId>statsd-over-slf4j</artifactId>
-            <version>1.0.0</version>
-        </dependency>
     </dependencies>
 
     <build>
