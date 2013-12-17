@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<c:configuration xmlns:c="http://fim.uhk.cz/ise/configuration.xsd">
+    <concurrency>
+        <threadsPool>100</threadsPool>
+    </concurrency>
+</c:configuration>

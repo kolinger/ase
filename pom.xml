@@ -5,14 +5,20 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cz.uhk.fim.virtualeconomy</groupId>
+    <groupId>cz.uhk.fim.ise</groupId>
     <artifactId>container</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <parameter.test>test</parameter.test>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>project.local</id>
+            <url>file:${project.basedir}/repo</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- ice -->
@@ -20,8 +26,6 @@
             <groupId>com.zeroc</groupId>
             <artifactId>ice</artifactId>
             <version>3.5.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Ice.jar</systemPath>
         </dependency>
 
         <!-- logging -->
@@ -45,21 +49,21 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>1.5</version>
                 <configuration>
-                    <mainClass>cz.uhk.fim.virtualeconomy.container.App</mainClass>
-                    <arguments>
-                        <argument>${parameter.test}</argument>
-                    </arguments>
+                    <transformSchemas>
+                        <transformSchema>
+                            <uri>http://fim.uhk.cz/ise/configuration.xsd</uri>
+                            <toFile>configuration.xsd</toFile>
+                        </transformSchema>
+                    </transformSchemas>
+                    <includes>
+                        <include>cz/uhk/fim/ise/configuration/model/*</include>
+                    </includes>
+                    <verbose>true</verbose>
+                    <outputDirectory>${project.basedir}/</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>
