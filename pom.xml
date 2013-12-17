@@ -5,8 +5,8 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cz.uhk.fim.ise</groupId>
-    <artifactId>container</artifactId>
+    <groupId>cz.uhk.fim</groupId>
+    <artifactId>ase</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -55,12 +55,12 @@
                 <configuration>
                     <transformSchemas>
                         <transformSchema>
-                            <uri>http://fim.uhk.cz/ise/configuration.xsd</uri>
+                            <uri>http://fim.uhk.cz/ase/configuration.xsd</uri>
                             <toFile>configuration.xsd</toFile>
                         </transformSchema>
                     </transformSchemas>
                     <includes>
-                        <include>cz/uhk/fim/ise/configuration/model/*</include>
+                        <include>cz/uhk/fim/ase/configuration/model/*</include>
                     </includes>
                     <verbose>true</verbose>
                     <outputDirectory>${project.basedir}/</outputDirectory>

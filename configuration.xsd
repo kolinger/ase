@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://fim.uhk.cz/ise/configuration.xsd" targetNamespace="http://fim.uhk.cz/ise/configuration.xsd" version="1.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://fim.uhk.cz/ase/configuration.xsd" targetNamespace="http://fim.uhk.cz/ase/configuration.xsd" version="1.0">
 
   <xs:element name="configuration" type="tns:configuration"/>
 

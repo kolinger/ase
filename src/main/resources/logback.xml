@@ -5,7 +5,7 @@
         </encoder>
     </appender>
 
-    <logger name="cz.uhk.fim.ise" level="INFO">
+    <logger name="cz.uhk.fim.ase" level="DEBUG">
         <appender-ref ref="CONSOLE" />
     </logger>
 </configuration>
