@@ -5,17 +5,7 @@ import cz.uhk.fim.ase.common.LoggedObject;
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-abstract public class Behavior extends LoggedObject {
-
-    private Boolean blocked = false;
-
-    public Boolean isRunnable() {
-        return !blocked;
-    }
-
-    public void block() {
-        blocked = true;
-    }
+abstract public class Behavior extends LoggedObject implements Runnable {
 
     public void run() {
         setup();

@@ -5,14 +5,14 @@ import cz.uhk.fim.ase.container.agents.TestAgent;
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-public class TestContainer extends Container {
+public class StaticContainer extends Container {
 
-    public TestContainer(String host, Integer port) {
+    public StaticContainer(String host, Integer port) {
         super(host, port);
     }
 
     protected void setup() {
-        for (Integer count = 1; count <= 50000; count++) {
+        for (Integer count = 1; count <= 5; count++) {
             addAgent(new TestAgent(this));
         }
     }

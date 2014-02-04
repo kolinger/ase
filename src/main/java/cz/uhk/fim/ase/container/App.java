@@ -18,7 +18,7 @@ public class App {
 
     private static void run(String host, Integer port) {
         logger.debug("Creating container on {}:{}", host, port);
-        Container container = new TestContainer(host, port);
+        Container container = new StaticContainer(host, port);
         container.run();
     }
 

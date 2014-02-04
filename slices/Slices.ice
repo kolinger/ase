@@ -8,7 +8,10 @@ module slices {
         int port;
     };
 
-    // message
+    // discover
+
+
+    // messages
     struct MessageAddress {
         string id;
         ContainerAddress container;

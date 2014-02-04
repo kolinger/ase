@@ -3,4 +3,10 @@
     <concurrency>
         <threadsPool>100</threadsPool>
     </concurrency>
+
+    <reportDatabase>
+        <jdbc>jdbc:postgresql://localhost:5432/ase</jdbc>
+        <user>ase</user>
+        <password>ase</password>
+    </reportDatabase>
 </c:configuration>

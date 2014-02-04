@@ -8,4 +8,8 @@
     <logger name="cz.uhk.fim.ase" level="DEBUG">
         <appender-ref ref="CONSOLE" />
     </logger>
+
+    <rootLogger level="DEBUG">
+        <appender-ref ref="CONSOLE" />
+    </rootLogger>
 </configuration>
