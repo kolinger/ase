@@ -9,7 +9,11 @@
         <appender-ref ref="CONSOLE" />
     </logger>
 
-    <rootLogger level="DEBUG">
+    <logger name="cz.uhk.fim.ase.communication" level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <rootLogger level="WARN">
         <appender-ref ref="CONSOLE" />
     </rootLogger>
 </configuration>

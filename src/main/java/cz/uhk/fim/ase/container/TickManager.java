@@ -27,7 +27,7 @@ public class TickManager {
     }
 
     public boolean isReportTick() {
-        return (reportTick % tick) == 0;
+        return (tick % reportTick) == 0;
     }
 
     public void setReportTick(Long tick) {

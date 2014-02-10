@@ -1,12 +1,12 @@
-package cz.uhk.fim.ase.communatication.impl;
+package cz.uhk.fim.ase.communication.impl;
 
 import Ice.Communicator;
 import Ice.InitializationData;
 import Ice.ObjectAdapter;
 import Ice.Util;
 import cz.uhk.fim.ase.common.LoggedObject;
-import cz.uhk.fim.ase.communatication.Listener;
-import cz.uhk.fim.ase.communatication.MessagesQueue;
+import cz.uhk.fim.ase.communication.Listener;
+import cz.uhk.fim.ase.communication.MessagesQueue;
 import cz.uhk.fim.ase.container.Container;
 import cz.uhk.fim.ase.model.ContainerEntity;
 

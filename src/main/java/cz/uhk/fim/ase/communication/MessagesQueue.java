@@ -1,4 +1,4 @@
-package cz.uhk.fim.ase.communatication;
+package cz.uhk.fim.ase.communication;
 
 import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.model.MessageEntity;

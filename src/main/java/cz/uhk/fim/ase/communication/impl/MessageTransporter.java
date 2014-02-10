@@ -1,7 +1,7 @@
-package cz.uhk.fim.ase.communatication.impl;
+package cz.uhk.fim.ase.communication.impl;
 
 import Ice.Current;
-import cz.uhk.fim.ase.communatication.MessagesQueue;
+import cz.uhk.fim.ase.communication.MessagesQueue;
 import cz.uhk.fim.ase.model.MessageEntity;
 import org.slf4j.LoggerFactory;
 import slices.Message;

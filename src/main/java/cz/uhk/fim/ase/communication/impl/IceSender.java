@@ -1,11 +1,11 @@
-package cz.uhk.fim.ase.communatication.impl;
+package cz.uhk.fim.ase.communication.impl;
 
 import Ice.Communicator;
 import Ice.InitializationData;
 import Ice.ObjectPrx;
 import Ice.Util;
 import cz.uhk.fim.ase.common.LoggedObject;
-import cz.uhk.fim.ase.communatication.Sender;
+import cz.uhk.fim.ase.communication.Sender;
 import cz.uhk.fim.ase.model.ContainerEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
 import slices.Message;

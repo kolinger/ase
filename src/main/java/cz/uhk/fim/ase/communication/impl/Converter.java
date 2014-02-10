@@ -1,4 +1,4 @@
-package cz.uhk.fim.ase.communatication.impl;
+package cz.uhk.fim.ase.communication.impl;
 
 import cz.uhk.fim.ase.model.ContainerEntity;
 import cz.uhk.fim.ase.model.MessageEntity;

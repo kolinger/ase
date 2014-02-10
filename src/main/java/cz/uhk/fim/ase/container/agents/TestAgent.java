@@ -21,7 +21,7 @@ public class TestAgent extends Agent {
 
     @Override
     protected void setup() {
-        addBehaviour(new Offer());
+//        addBehaviour(new Offer());
         addBehaviour(new Request());
     }
 

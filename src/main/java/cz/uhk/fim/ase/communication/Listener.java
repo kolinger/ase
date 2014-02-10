@@ -1,4 +1,4 @@
-package cz.uhk.fim.ase.communatication;
+package cz.uhk.fim.ase.communication;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>

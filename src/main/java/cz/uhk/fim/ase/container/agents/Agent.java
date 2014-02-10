@@ -1,8 +1,8 @@
 package cz.uhk.fim.ase.container.agents;
 
 import cz.uhk.fim.ase.common.LoggedObject;
-import cz.uhk.fim.ase.communatication.MessagesQueue;
-import cz.uhk.fim.ase.communatication.Sender;
+import cz.uhk.fim.ase.communication.MessagesQueue;
+import cz.uhk.fim.ase.communication.Sender;
 import cz.uhk.fim.ase.container.Container;
 import cz.uhk.fim.ase.container.agents.behaviours.Behavior;
 import cz.uhk.fim.ase.model.AgentEntity;
@@ -63,15 +63,21 @@ abstract public class Agent extends LoggedObject implements ReportAgent {
     }
 
     public Behavior getNextBehavior() {
-        Behavior behavior = null;
-        for (Integer count = behaviorsPointer; count < behaviors.size(); count++) {
-            if (behaviorsPointer >= behaviors.size()) {
-                behaviorsPointer = 0;
-            }
-            behavior = behaviors.get(behaviorsPointer++);
-        }
-        if (behavior == null) {
+        // no tasks, we are done
+        if (behaviors.size() == 0) {
             done = true;
+            return null;
+        }
+
+        // too high pointer, back to start
+        if (behaviorsPointer >= behaviors.size()) {
+            behaviorsPointer = 0;
+        }
+
+        // remove task when is done
+        Behavior behavior = behaviors.get(behaviorsPointer++);
+        if (behavior.isDone()) {
+            behaviors.remove(behavior);
         }
         return behavior;
     }

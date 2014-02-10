@@ -1,30 +1,35 @@
 package cz.uhk.fim.ase.container;
 
 import cz.uhk.fim.ase.common.LoggedObject;
-import cz.uhk.fim.ase.communatication.Listener;
-import cz.uhk.fim.ase.communatication.MessagesQueue;
-import cz.uhk.fim.ase.communatication.Sender;
-import cz.uhk.fim.ase.communatication.impl.IceListener;
-import cz.uhk.fim.ase.communatication.impl.IceSender;
+import cz.uhk.fim.ase.communication.Listener;
+import cz.uhk.fim.ase.communication.MessagesQueue;
+import cz.uhk.fim.ase.communication.Sender;
+import cz.uhk.fim.ase.communication.impl.IceListener;
+import cz.uhk.fim.ase.communication.impl.IceSender;
 import cz.uhk.fim.ase.configuration.Config;
 import cz.uhk.fim.ase.container.agents.Agent;
 import cz.uhk.fim.ase.container.agents.behaviours.Behavior;
 import cz.uhk.fim.ase.model.ContainerEntity;
 import cz.uhk.fim.ase.reporting.ReportManager;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
 abstract public class Container extends LoggedObject {
 
-    private Map<UUID, Agent> agents = new HashMap<UUID, Agent>();
+    private Map<UUID, Agent> agents = new ConcurrentHashMap<UUID, Agent>();
     private ExecutorService executor;
     private Listener listener;
     private Sender sender = new IceSender();
@@ -80,20 +85,18 @@ abstract public class Container extends LoggedObject {
      */
 
     public void run() {
-        executor.execute(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 registerListener();
             }
-        });
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                getLogger().info("Setting up container {}", getAddress());
-                setup();
-                nextTick();
-            }
-        });
+        }).start();
+
+        getLogger().info("Setting up container {}", getAddress());
+        setup();
+        while (true) {
+            nextTick();
+        }
     }
 
     abstract protected void setup();
@@ -134,15 +137,26 @@ abstract public class Container extends LoggedObject {
 
     private void nextTick() {
         getLogger().info("Executing tick #" + TickManager.get().getCurrentTick());
+
+        Set<Callable<Object>> todoList = new HashSet<Callable<Object>>();
         for (Agent agent : agents.values()) {
             if (TickManager.get().isFinalTick()) {
                 agent.takeDown();
             } else {
-                Behavior behavior = agent.getNextBehavior();
-                if (behavior != null) {
-                    executor.execute(behavior);
+                Callable<Object> task = agent.getNextBehavior();
+                if (task != null) {
+                    todoList.add(task);
                 }
             }
+        }
+
+        try {
+            getLogger().debug("Waiting for agents");
+            executor.invokeAll(todoList); // TODO: config
+        } catch (InterruptedException e) {
+            getLogger().error("Agents execution interrupted");
+        } finally {
+            getLogger().debug("Agents are done");
         }
 
         if (TickManager.get().isFinalTick()) {
@@ -150,20 +164,20 @@ abstract public class Container extends LoggedObject {
             return;
         }
 
-//        if (TickManager.get().isReportTick()) {
+        if (TickManager.get().isReportTick()) {
             getLogger().debug("Executing report for tick #" + TickManager.get().getCurrentTick());
             reportManager.doReport();
-//        }
+        }
 
         // cleanup
         for (Agent agent : agents.values()) {
             if (agent.isDone()) {
                 agent.takeDown();
                 agents.remove(agent.getEntity().getId());
+                getLogger().warn("Agent {} is done, destroying", agent.getEntity());
             }
         }
 
-//        TickManager.get().setReadyState(); // TODO wait for other containers
-//        nextTick();
+        TickManager.get().setReadyState(); // TODO wait for other containers
     }
 }
