@@ -91,15 +91,17 @@ abstract public class Agent extends LoggedObject implements ReportAgent {
     }
 
     protected void send(MessageEntity message) {
-        getLogger().debug("Agent {} sending message {}", getEntity(), message);
         Sender sender = getContainer().getSender();
         sender.send(message);
     }
 
     protected MessageEntity receive() {
         MessagesQueue queue = getContainer().getQueue();
-        MessageEntity message = queue.search(getEntity().getId());
-        getLogger().debug("Agent {} receiving first message {}", getEntity(), message);
-        return message;
+        return queue.search(getEntity().getId());
+    }
+
+    protected MessageEntity receive(MessageEntity.Type type) {
+        MessagesQueue queue = getContainer().getQueue();
+        return queue.searchByType(getEntity().getId(), type);
     }
 }

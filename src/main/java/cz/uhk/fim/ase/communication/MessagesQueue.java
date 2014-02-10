@@ -43,7 +43,7 @@ public class MessagesQueue extends LoggedObject {
         if (queue.containsKey(agentId)) {
             Queue<MessageEntity> messages = queue.get(agentId);
             for (MessageEntity message : messages) {
-                if (message.getType() == type) {
+                if (message.getType().equals(type)) {
                     messages.remove(message);
                     return message;
                 }

@@ -8,13 +8,10 @@ import cz.uhk.fim.ase.communication.impl.IceListener;
 import cz.uhk.fim.ase.communication.impl.IceSender;
 import cz.uhk.fim.ase.configuration.Config;
 import cz.uhk.fim.ase.container.agents.Agent;
-import cz.uhk.fim.ase.container.agents.behaviours.Behavior;
 import cz.uhk.fim.ase.model.ContainerEntity;
 import cz.uhk.fim.ase.reporting.ReportManager;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -22,7 +19,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
@@ -71,6 +67,7 @@ abstract public class Container extends LoggedObject {
     public void addAgent(Agent agent) {
         getLogger().info("Registering agent {}", agent.getEntity());
         agents.put(agent.getEntity().getId(), agent);
+        Registry.get().register(agent);
     }
 
     public void removeAgent(UUID id) {

@@ -10,5 +10,5 @@ public class Container {
 
     public Long finalTick;
 
-    public Long reportEveryTick = 10L;
+    public Long reportEveryTick = 5L;
 }
