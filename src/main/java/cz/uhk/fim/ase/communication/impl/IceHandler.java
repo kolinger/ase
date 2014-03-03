@@ -2,7 +2,7 @@ package cz.uhk.fim.ase.communication.impl;
 
 import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.container.Container;
-import cz.uhk.fim.ase.model.MessageEntity;
+import slices.Message;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
@@ -15,7 +15,7 @@ public class IceHandler extends LoggedObject {
         this.container = container;
     }
 
-    public void handle(MessageEntity message) {
+    public void handle(Message message) {
         getLogger().debug("Hanling message " + message);
         container.getQueue().addMessage(message);
     }

@@ -5,8 +5,6 @@ import Ice.InitializationData;
 import Ice.ObjectAdapter;
 import Ice.Util;
 import cz.uhk.fim.ase.common.LoggedObject;
-import cz.uhk.fim.ase.communication.Listener;
-import cz.uhk.fim.ase.communication.MessagesQueue;
 import cz.uhk.fim.ase.container.Container;
 
 import java.net.URL;
@@ -14,29 +12,30 @@ import java.net.URL;
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-public class IceListener extends LoggedObject implements Listener {
+public class DiscoverListener extends LoggedObject {
 
-    private String address;
-    private MessagesQueue queue;
+    private Container container;
     private Communicator communicator;
 
-    public IceListener(Container container) {
-        this.address = container.getAddress();
-        this.queue = container.getQueue();
+    public DiscoverListener(Container container) {
+        this.container = container;
     }
 
     public Communicator getCommunicator() {
         return communicator;
     }
 
-    public void listen() {
+    public void listen(String address, Integer port) {
         communicator = createCommunicator();
 
-        String[] parts = address.split(":");
-        String endpoint = "tcp -h " + parts[0] + " -p " + parts[1];
-        ObjectAdapter adapter = communicator.createObjectAdapterWithEndpoints("Handler", endpoint);
-        adapter.add(new MessageTransporter(queue), communicator.stringToIdentity("handler"));
+        ObjectAdapter adapter = communicator.createObjectAdapterWithEndpoints("DiscoverHello", "tcp");
+        Ice.ObjectPrx hello = adapter.addWithUUID(new DiscoverHello(container));
         adapter.activate();
+
+        ObjectAdapter discoverAdapter = communicator.createObjectAdapterWithEndpoints("Discover",
+                "udp -h " + address +  " -p " + port);
+        discoverAdapter.add(new DiscoverHandler(hello), communicator.stringToIdentity("discover"));
+        discoverAdapter.activate();
 
         communicator.waitForShutdown();
         communicator.destroy();

@@ -4,11 +4,12 @@ import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.communication.Listener;
 import cz.uhk.fim.ase.communication.MessagesQueue;
 import cz.uhk.fim.ase.communication.Sender;
+import cz.uhk.fim.ase.communication.impl.DiscoverClient;
+import cz.uhk.fim.ase.communication.impl.DiscoverListener;
 import cz.uhk.fim.ase.communication.impl.IceListener;
 import cz.uhk.fim.ase.communication.impl.IceSender;
 import cz.uhk.fim.ase.configuration.Config;
 import cz.uhk.fim.ase.container.agents.Agent;
-import cz.uhk.fim.ase.model.ContainerEntity;
 import cz.uhk.fim.ase.reporting.ReportManager;
 
 import java.util.HashSet;
@@ -21,20 +22,31 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
+ * Main object with runs everything and also used as service locator
+ *
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
 abstract public class Container extends LoggedObject {
 
-    private Map<UUID, Agent> agents = new ConcurrentHashMap<UUID, Agent>();
-    private ExecutorService executor;
-    private Listener listener;
+    // services
     private Sender sender = new IceSender();
-    private ContainerEntity address;
     private MessagesQueue queue = new MessagesQueue();
     private ReportManager reportManager;
 
+    // agents
+    private Map<String, Agent> agents = new ConcurrentHashMap<String, Agent>();
+    private ExecutorService executor;
+
+    // listeners
+    private IceListener listener;
+    private Thread listenerThread;
+    private DiscoverListener discoverListener;
+    private Thread discoverListenerThread;
+
+    private String address;
+
     public Container(String host, Integer port) {
-        address = new ContainerEntity(host, port);
+        address = host + ":" + port;
         reportManager = new ReportManager(this);
         resolveInstance();
         createThreadPool();
@@ -44,7 +56,7 @@ abstract public class Container extends LoggedObject {
      * ***************************** setters / getters *****************************
      */
 
-    public ContainerEntity getAddress() {
+    public String getAddress() {
         return address;
     }
 
@@ -56,25 +68,26 @@ abstract public class Container extends LoggedObject {
         return listener;
     }
 
+    public DiscoverListener getDiscoverListener() {
+        return discoverListener;
+    }
+
+    public ReportManager getReportManager() {
+        return reportManager;
+    }
+
     public MessagesQueue getQueue() {
         return queue;
     }
 
-    public Map<UUID, Agent> getAgents() {
+    public Map<String, Agent> getAgents() {
         return agents;
     }
 
     public void addAgent(Agent agent) {
         getLogger().info("Registering agent {}", agent.getEntity());
-        agents.put(agent.getEntity().getId(), agent);
-        Registry.get().register(agent);
-    }
-
-    public void removeAgent(UUID id) {
-        getLogger().info("Removing agent with ID {}", id);
-        if (agents.containsKey(id)) {
-            agents.remove(id);
-        }
+        agents.put(agent.getEntity().id, agent);
+        Registry.get().register(agent.getEntity());
     }
 
     /**
@@ -82,36 +95,53 @@ abstract public class Container extends LoggedObject {
      */
 
     public void run() {
-        new Thread(new Runnable() {
+        // run listener for messages (in background)
+        listenerThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 registerListener();
             }
-        }).start();
+        });
+        listenerThread.start();
 
+        // run listener for discover request (in background)
+        discoverListenerThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                registerDiscoverListener();
+            }
+        });
+        discoverListenerThread.start();
+
+        // setup and execute agents tasks
         getLogger().info("Setting up container {}", getAddress());
         setup();
         while (true) {
-            nextTick();
+            if (!nextTick()) {
+                break;
+            }
         }
     }
 
     abstract protected void setup();
 
+    /**
+     * Create a thread pool used for agents tasks only
+     */
     private void createThreadPool() {
         Integer poolSize = Config.get().concurrency.threadsPool;
         getLogger().debug("Creating threads pool with size {} on container {}", poolSize, getAddress());
         executor = Executors.newFixedThreadPool(poolSize);
     }
 
+    /**
+     * Create discover request and resolve instance ID - use external instance ID if exists otherwise create new ID
+     * Only one ID exists at time
+     */
     private void resolveInstance() {
         String instance = discoverAnotherContainers();
-        if (instance != null && Config.get().instance != null) {
-            getLogger().warn("Using discovered instance ID {} (overriding configuration)", instance);
-            Config.get().instance = instance;
-            return;
-        }
         if (instance != null) {
+            getLogger().warn("Using discovered instance ID {} (overriding configuration)", instance);
             Config.get().instance = instance;
         } else {
             if (Config.get().instance == null) {
@@ -122,8 +152,9 @@ abstract public class Container extends LoggedObject {
     }
 
     private String discoverAnotherContainers() {
-        // TODO discover containers and instance ID
-        return null;
+        getLogger().info("Discovering containers on {}", "239.255.1.1:10000");
+        DiscoverClient client = new DiscoverClient();
+        return client.process("239.255.1.1", 10000);
     }
 
     private void registerListener() {
@@ -132,9 +163,19 @@ abstract public class Container extends LoggedObject {
         listener.listen();
     }
 
-    private void nextTick() {
-        getLogger().info("Executing tick #" + TickManager.get().getCurrentTick());
+    private void registerDiscoverListener() {
+        getLogger().info("Creating discover listener on {}", "239.255.1.1:10000");
+        discoverListener = new DiscoverListener(this);
+        discoverListener.listen("239.255.1.1", 10000);
+    }
 
+    /**
+     * Runs agents tasks
+     */
+    private Boolean nextTick() {
+        //getLogger().info("Executing tick #" + TickManager.get().getCurrentTick());
+
+        // collect tasks
         Set<Callable<Object>> todoList = new HashSet<Callable<Object>>();
         for (Agent agent : agents.values()) {
             if (TickManager.get().isFinalTick()) {
@@ -147,34 +188,51 @@ abstract public class Container extends LoggedObject {
             }
         }
 
+        // run tasks
         try {
             getLogger().debug("Waiting for agents");
-            executor.invokeAll(todoList); // TODO: config
+            executor.invokeAll(todoList);
         } catch (InterruptedException e) {
             getLogger().error("Agents execution interrupted");
         } finally {
             getLogger().debug("Agents are done");
         }
 
+        // if this is last task, shutdown executing
         if (TickManager.get().isFinalTick()) {
-            getLogger().debug("This is final tick, shutdown");
-            return;
+            getLogger().info("This is final tick, shutdown");
+            shutdown();
+            return false;
         }
 
+        // if this is report tick, create report
         if (TickManager.get().isReportTick()) {
-            getLogger().debug("Executing report for tick #" + TickManager.get().getCurrentTick());
+            getLogger().info("Executing report for tick #" + TickManager.get().getCurrentTick());
             reportManager.doReport();
         }
 
-        // cleanup
-        for (Agent agent : agents.values()) {
-            if (agent.isDone()) {
-                agent.takeDown();
-                agents.remove(agent.getEntity().getId());
-                getLogger().warn("Agent {} is done, destroying", agent.getEntity());
-            }
+        // wait for other containers then continue to next tick
+        TickManager.get().setReadyState(); // TODO wait for other containers
+        return true;
+    }
+
+    private void shutdown() {
+        executor.shutdownNow();
+
+        // TODO: how to kill ice threads?
+        try {
+            listener.getCommunicator().shutdown();
+        } catch (Exception e) {
+            // skip
         }
 
-        TickManager.get().setReadyState(); // TODO wait for other containers
+        try {
+            discoverListener.getCommunicator().shutdown();
+        } catch (Exception e) {
+            // skip
+        }
+
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        System.out.println(threadSet);
     }
 }

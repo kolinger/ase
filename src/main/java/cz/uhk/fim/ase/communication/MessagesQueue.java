@@ -1,13 +1,14 @@
 package cz.uhk.fim.ase.communication;
 
 import cz.uhk.fim.ase.common.LoggedObject;
-import cz.uhk.fim.ase.model.MessageEntity;
+import cz.uhk.fim.ase.model.MessageType;
+import slices.AgentEntity;
+import slices.Message;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
-import java.util.UUID;
 
 
 /**
@@ -15,35 +16,35 @@ import java.util.UUID;
  */
 public class MessagesQueue extends LoggedObject {
 
-    private Map<UUID, Queue<MessageEntity>> queue = new HashMap<UUID, Queue<MessageEntity>>();
+    private Map<String, Queue<Message>> queue = new HashMap<String, Queue<Message>>();
 
-    public synchronized void addMessage(MessageEntity message) {
-        for (MessageEntity.Address receiver : message.getReceivers()) {
-            Queue<MessageEntity> messages;
-            if (queue.containsKey(receiver.getAgentId())) {
-                messages = queue.get(receiver.getAgentId());
+    public synchronized void addMessage(Message message) {
+        for (AgentEntity receiver : message.receivers) {
+            Queue<Message> messages;
+            if (queue.containsKey(receiver.id)) {
+                messages = queue.get(receiver.id);
                 messages.add(message);
             } else {
-                messages = new LinkedList<MessageEntity>();
+                messages = new LinkedList<Message>();
                 messages.add(message);
-                queue.put(receiver.getAgentId(), messages);
+                queue.put(receiver.id, messages);
             }
         }
     }
 
-    public synchronized MessageEntity search(UUID agentId) {
+    public synchronized Message search(String agentId) {
         if (queue.containsKey(agentId)) {
-            Queue<MessageEntity> messages = queue.get(agentId);
+            Queue<Message> messages = queue.get(agentId);
             return messages.poll();
         }
         return null;
     }
 
-    public synchronized MessageEntity searchByType(UUID agentId, MessageEntity.Type type) {
+    public synchronized Message searchByType(String agentId, MessageType type) {
         if (queue.containsKey(agentId)) {
-            Queue<MessageEntity> messages = queue.get(agentId);
-            for (MessageEntity message : messages) {
-                if (message.getType().equals(type)) {
+            Queue<Message> messages = queue.get(agentId);
+            for (Message message : messages) {
+                if (message.type == type.ordinal()) {
                     messages.remove(message);
                     return message;
                 }

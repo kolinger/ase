@@ -1,8 +1,11 @@
 package cz.uhk.fim.ase.container.agents;
 
-import cz.uhk.fim.ase.container.Container;
+import cz.uhk.fim.ase.communication.MessagesQueue;
+import cz.uhk.fim.ase.communication.Sender;
 import cz.uhk.fim.ase.container.agents.behaviours.InfiniteBehaviour;
-import cz.uhk.fim.ase.model.MessageEntity;
+import cz.uhk.fim.ase.model.MessageType;
+import slices.AgentEntity;
+import slices.Message;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,8 +20,8 @@ public class TestAgent1 extends Agent {
     private Integer resources = 10000;
     private Integer money = 100;
 
-    public TestAgent1(Container container) {
-        super(container);
+    public TestAgent1(AgentEntity entity, Sender sender, MessagesQueue queue) {
+        super(entity, sender, queue);
     }
 
     @Override
@@ -40,17 +43,17 @@ public class TestAgent1 extends Agent {
 
         @Override
         protected void doCycle() {
-            MessageEntity message = receive(MessageEntity.Type.REQUEST);
+            Message message = receive(MessageType.REQUEST);
             if (message == null) {
                 return;
             }
 
-            MessageEntity response = new MessageEntity();
-            response.setSender(getEntity().getId(), getEntity().getContainer());
-            response.addReceiver(message.getSender().getAgentId(), getEntity().getContainer());
-            response.setType(MessageEntity.Type.ACCEPT_PROPOSAL);
+            Message response = new Message();
+            response.sender = getEntity();
+            response.receivers = new AgentEntity[]{message.sender};
+            response.type = MessageType.ACCEPT_PROPOSAL.ordinal();
             Integer price = new Random().nextInt(9) + 1;
-            response.setContent(price.toString());
+            response.content = price.toString();
             send(response);
         }
     }
@@ -59,24 +62,24 @@ public class TestAgent1 extends Agent {
 
         @Override
         protected void doCycle() {
-            MessageEntity message = receive(MessageEntity.Type.AGREE);
+            Message message = receive(MessageType.AGREE);
             if (message == null) {
                 return;
             }
 
-            MessageEntity response = new MessageEntity();
-            response.setSender(getEntity().getId(), getEntity().getContainer());
-            response.addReceiver(message.getSender().getAgentId(), getEntity().getContainer());
+            Message response = new Message();
+            response.sender = getEntity();
+            response.receivers = new AgentEntity[]{message.sender};
 
             if (resources > 0) {
-                response.setType(MessageEntity.Type.CONFIRM);
-                response.setContent(message.getContent());
+                response.type = MessageType.CONFIRM.ordinal();
+                response.content = message.content;
                 resources--;
-                money += Integer.valueOf(message.getContent());
+                money += Integer.valueOf(message.content);
                 sold++;
             } else {
-                response.setType(MessageEntity.Type.REFUSE);
-                response.setContent("sorry, i don't have it");
+                response.type = MessageType.REFUSE.ordinal();
+                response.content = "sorry, i don't have it";
             }
 
             send(response);

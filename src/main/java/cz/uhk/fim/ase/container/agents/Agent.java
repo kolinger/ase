@@ -3,35 +3,32 @@ package cz.uhk.fim.ase.container.agents;
 import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.communication.MessagesQueue;
 import cz.uhk.fim.ase.communication.Sender;
-import cz.uhk.fim.ase.container.Container;
 import cz.uhk.fim.ase.container.agents.behaviours.Behavior;
-import cz.uhk.fim.ase.model.AgentEntity;
-import cz.uhk.fim.ase.model.MessageEntity;
-import cz.uhk.fim.ase.reporting.model.ReportAgent;
+import cz.uhk.fim.ase.model.MessageType;
+import slices.AgentEntity;
+import slices.Message;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-abstract public class Agent extends LoggedObject implements ReportAgent {
+abstract public class Agent extends LoggedObject {
 
     private AgentEntity entity;
-    private Container container;
+    private Sender sender;
+    private MessagesQueue queue;
     private List<Behavior> behaviors = new ArrayList<Behavior>();
     private Integer behaviorsPointer = 0;
     private Boolean done = false;
 
-    public Agent(Container container) {
-        this.container = container;
-        entity = new AgentEntity(UUID.randomUUID(), container.getAddress());
+    public Agent(AgentEntity entity, Sender sender, MessagesQueue queue) {
+        this.sender = sender;
+        this.queue = queue;
+        this.entity = entity;
         setup();
-    }
-
-    public String getReportId() {
-        return entity.getId().toString();
     }
 
     public AgentEntity getEntity() {
@@ -40,14 +37,6 @@ abstract public class Agent extends LoggedObject implements ReportAgent {
 
     public void setEntity(AgentEntity entity) {
         this.entity = entity;
-    }
-
-    public Container getContainer() {
-        return container;
-    }
-
-    public void setContainer(Container container) {
-        this.container = container;
     }
 
     public Boolean isDone() {
@@ -90,18 +79,17 @@ abstract public class Agent extends LoggedObject implements ReportAgent {
         // virtual
     }
 
-    protected void send(MessageEntity message) {
-        Sender sender = getContainer().getSender();
+    abstract public Map<String, String> getReportValues();
+
+    protected void send(Message message) {
         sender.send(message);
     }
 
-    protected MessageEntity receive() {
-        MessagesQueue queue = getContainer().getQueue();
-        return queue.search(getEntity().getId());
+    protected Message receive() {
+        return queue.search(getEntity().id);
     }
 
-    protected MessageEntity receive(MessageEntity.Type type) {
-        MessagesQueue queue = getContainer().getQueue();
-        return queue.searchByType(getEntity().getId(), type);
+    protected Message receive(MessageType type) {
+        return queue.searchByType(getEntity().id, type);
     }
 }

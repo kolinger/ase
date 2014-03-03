@@ -6,8 +6,7 @@ import Ice.ObjectPrx;
 import Ice.Util;
 import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.communication.Sender;
-import cz.uhk.fim.ase.model.ContainerEntity;
-import cz.uhk.fim.ase.model.MessageEntity;
+import slices.AgentEntity;
 import slices.Message;
 import slices.MessageTransporterPrx;
 import slices.MessageTransporterPrxHelper;
@@ -29,34 +28,33 @@ public class IceSender extends LoggedObject implements Sender {
     }
 
     @Override
-    public void send(MessageEntity message) {
+    public void send(Message message) {
         getLogger().debug("Sending message {}", message);
 
-        Message data = Converter.convertMessage(message);
-        for (MessageEntity.Address address : message.getReceivers()) {
-            ObjectPrx proxy = getProxy(address.getContainer());
+        for (AgentEntity receiver : message.receivers) {
+            ObjectPrx proxy = getProxy(receiver.container);
             MessageTransporterPrx transporter = MessageTransporterPrxHelper.checkedCast(proxy);
-            transporter.transport(data);
+            transporter.transport(message);
         }
     }
 
-    private synchronized ObjectPrx getProxy(ContainerEntity container) {
-        String key = container.getAddress();
-        if (proxies.containsKey(key)) {
-            getLogger().debug("Getting proxy {} from cache", key);
-            return proxies.get(key);
+    private synchronized ObjectPrx getProxy(String container) {
+        if (proxies.containsKey(container)) {
+            getLogger().debug("Getting proxy {} from cache", container);
+            return proxies.get(container);
         }
-        getLogger().debug("Creating proxy {}", key);
-        String string = "handler:tcp -h " + container.getHost() + " -p " + container.getPort();
+        getLogger().debug("Creating proxy {}", container);
+        String[] parts = container.split(":");
+        String string = "handler:tcp -h " + parts[0] + " -p " + parts[1];
         ObjectPrx proxy = communicator.stringToProxy(string);
-        proxies.put(key, proxy);
+        proxies.put(container, proxy);
         return proxy;
     }
 
     private Communicator createCommunicator() {
         InitializationData initializationData = new InitializationData();
         initializationData.properties = Ice.Util.createProperties();
-        URL file = this.getClass().getClassLoader().getResource("config.client");
+        URL file = this.getClass().getClassLoader().getResource("/config.client");
         if (file != null) {
             initializationData.properties.load(file.getFile());
         }

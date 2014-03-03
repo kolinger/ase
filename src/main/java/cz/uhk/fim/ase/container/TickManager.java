@@ -1,11 +1,12 @@
 package cz.uhk.fim.ase.container;
 
+import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.configuration.Config;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-public class TickManager {
+public class TickManager extends LoggedObject {
 
     private static TickManager instance;
     private Long tick = 1L;

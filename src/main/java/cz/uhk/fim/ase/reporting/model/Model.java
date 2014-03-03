@@ -1,12 +1,13 @@
 package cz.uhk.fim.ase.reporting.model;
 
+import cz.uhk.fim.ase.container.agents.Agent;
+
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
 public interface Model {
 
-    void save(Map<UUID, ? extends ReportAgent> agents);
+    void save(Map<String, ? extends Agent> agents);
 }

@@ -11,4 +11,6 @@ public class Container {
     public Long finalTick;
 
     public Long reportEveryTick = 5L;
+
+    public Integer agentsCount = 1000000;
 }

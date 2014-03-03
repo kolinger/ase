@@ -13,7 +13,7 @@
         <appender-ref ref="CONSOLE" />
     </logger>
 
-    <rootLogger level="WARN">
-        <appender-ref ref="CONSOLE" />
-    </rootLogger>
+    <!--<rootLogger level="WARN">-->
+        <!--<appender-ref ref="CONSOLE" />-->
+    <!--</rootLogger>-->
 </configuration>

@@ -9,4 +9,10 @@
         <user>ase</user>
         <password>ase</password>
     </reportDatabase>
+
+    <container>
+        <finalTick>100000</finalTick>
+        <reportEveryTick>100000</reportEveryTick>
+        <agentsCount>100</agentsCount>
+    </container>
 </c:configuration>

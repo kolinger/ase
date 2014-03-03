@@ -2,26 +2,41 @@
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
 module slices {
-    // container
-    struct ContainerAddress {
-        string host;
-        int port;
+    // model
+    dictionary<string, string> StringsMap;
+
+    struct AgentEntity {
+        string container;
+        string id;
+        StringsMap properties;
+    };
+    sequence<AgentEntity> AgentsList;
+
+    // discovering
+    interface DiscoverReply {
+        void reply(Object* obj);
     };
 
-    // discover
+    interface Discover {
+        void lookup(DiscoverReply* reply);
+    };
 
+    interface DiscoverHello {
+        string getInstanceId();
+        AgentsList getAgents();
+    };
 
     // messages
     struct MessageAddress {
         string id;
-        ContainerAddress container;
+        string container;
     };
 
     sequence<MessageAddress> MessageReceivers;
 
     struct Message {
-        MessageAddress sender;
-        MessageReceivers receivers;
+        AgentEntity sender;
+        AgentsList receivers;
         int type;
         string content;
     };
