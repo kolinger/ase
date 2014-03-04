@@ -13,4 +13,12 @@ public class Container {
     public Long reportEveryTick = 5L;
 
     public Integer agentsCount = 1000000;
+
+    public String address = "localhost";
+
+    public Integer port = 10000;
+
+    public String discoverAddress = "239.255.1.1";
+
+    public Integer discoverPort = 10001;
 }

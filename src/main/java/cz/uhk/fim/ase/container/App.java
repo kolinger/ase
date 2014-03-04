@@ -1,5 +1,6 @@
 package cz.uhk.fim.ase.container;
 
+import cz.uhk.fim.ase.configuration.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -13,7 +14,7 @@ public class App {
 
     public static void main(String[] args) {
         initialization();
-        run("localhost", 10000);
+        run(Config.get().container.address, Config.get().container.port);
     }
 
     private static void run(String host, Integer port) {

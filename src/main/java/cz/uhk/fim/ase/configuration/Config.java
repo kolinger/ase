@@ -13,19 +13,32 @@ import java.net.URL;
  */
 public class Config {
 
-    private static Configuration instance;
+    private static Config instance;
+    private Configuration configuration;
 
     public static Configuration get() {
         if (instance == null) {
-            try {
-                JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
-                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-                URL url = ClassLoader.getSystemResource("configuration.xml");
-                instance = (Configuration) unmarshaller.unmarshal(url);
-            } catch (JAXBException e) {
-                LoggerFactory.getLogger(Config.class).error("Failed configuration loading", e);
-            }
+            instance = new Config();
         }
-        return instance;
+        return instance.getConfiguration();
+    }
+
+    public Config() {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            URL url = this.getClass().getClassLoader().getResource("configuration.xml");
+            configuration = (Configuration) unmarshaller.unmarshal(url);
+        } catch (JAXBException e) {
+            LoggerFactory.getLogger(Config.class).error("Failed configuration loading", e);
+        }
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }

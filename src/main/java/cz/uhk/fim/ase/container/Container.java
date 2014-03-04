@@ -154,7 +154,7 @@ abstract public class Container extends LoggedObject {
     private String discoverAnotherContainers() {
         getLogger().info("Discovering containers on {}", "239.255.1.1:10000");
         DiscoverClient client = new DiscoverClient();
-        return client.process("239.255.1.1", 10000);
+        return client.process(Config.get().container.discoverAddress, Config.get().container.discoverPort);
     }
 
     private void registerListener() {
@@ -166,7 +166,7 @@ abstract public class Container extends LoggedObject {
     private void registerDiscoverListener() {
         getLogger().info("Creating discover listener on {}", "239.255.1.1:10000");
         discoverListener = new DiscoverListener(this);
-        discoverListener.listen("239.255.1.1", 10000);
+        discoverListener.listen(Config.get().container.discoverAddress, Config.get().container.discoverPort);
     }
 
     /**
