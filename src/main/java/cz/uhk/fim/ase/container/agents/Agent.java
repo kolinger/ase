@@ -2,11 +2,10 @@ package cz.uhk.fim.ase.container.agents;
 
 import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.communication.MessagesQueue;
-import cz.uhk.fim.ase.communication.Sender;
+import cz.uhk.fim.ase.communication.MessagesSender;
 import cz.uhk.fim.ase.container.agents.behaviours.Behavior;
-import cz.uhk.fim.ase.model.MessageType;
-import slices.AgentEntity;
-import slices.Message;
+import cz.uhk.fim.ase.model.AgentEntity;
+import cz.uhk.fim.ase.model.MessageEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +17,13 @@ import java.util.Map;
 abstract public class Agent extends LoggedObject {
 
     private AgentEntity entity;
-    private Sender sender;
+    private MessagesSender sender;
     private MessagesQueue queue;
     private List<Behavior> behaviors = new ArrayList<Behavior>();
     private Integer behaviorsPointer = 0;
     private Boolean done = false;
 
-    public Agent(AgentEntity entity, Sender sender, MessagesQueue queue) {
+    public Agent(AgentEntity entity, MessagesSender sender, MessagesQueue queue) {
         this.sender = sender;
         this.queue = queue;
         this.entity = entity;
@@ -81,15 +80,15 @@ abstract public class Agent extends LoggedObject {
 
     abstract public Map<String, String> getReportValues();
 
-    protected void send(Message message) {
+    protected void send(MessageEntity message) {
         sender.send(message);
     }
 
-    protected Message receive() {
-        return queue.search(getEntity().id);
+    protected MessageEntity receive() {
+        return queue.search(getEntity().getId());
     }
 
-    protected Message receive(MessageType type) {
-        return queue.searchByType(getEntity().id, type);
+    protected MessageEntity receive(Integer type) {
+        return queue.searchByType(getEntity().getId(), type);
     }
 }

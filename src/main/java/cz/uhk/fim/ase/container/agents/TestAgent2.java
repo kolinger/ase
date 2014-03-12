@@ -1,12 +1,13 @@
 package cz.uhk.fim.ase.container.agents;
 
-import cz.uhk.fim.ase.communication.MessagesQueue;
-import cz.uhk.fim.ase.communication.Sender;
+import cz.uhk.fim.ase.communication.MessagesSender;
+import cz.uhk.fim.ase.communication.impl.MessagesQueueImpl;
 import cz.uhk.fim.ase.container.Registry;
 import cz.uhk.fim.ase.container.agents.behaviours.InfiniteBehaviour;
+import cz.uhk.fim.ase.model.AgentEntity;
+import cz.uhk.fim.ase.model.MessageEntity;
 import cz.uhk.fim.ase.model.MessageType;
-import slices.AgentEntity;
-import slices.Message;
+import cz.uhk.fim.ase.model.impl.MessageEntityImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class TestAgent2 extends Agent {
     private Integer resources = 10000;
     private Integer money = 100;
 
-    public TestAgent2(AgentEntity entity, Sender sender, MessagesQueue queue) {
+    public TestAgent2(AgentEntity entity, MessagesSender sender, MessagesQueueImpl queue) {
         super(entity, sender, queue);
     }
 
@@ -44,13 +45,13 @@ public class TestAgent2 extends Agent {
 
         @Override
         protected void doCycle() {
-            Message message = new Message();
-            message.sender = getEntity();
+            MessageEntity message = new MessageEntityImpl();
+            message.setSender(getEntity());
             AgentEntity random = Registry.get().getRandomAgent1();
             if (random != null) {
-                message.receivers = new AgentEntity[]{random};
-                message.type = MessageType.REQUEST.ordinal();
-                message.content = "i need more resources";
+                message.getReceivers().add(random);
+                message.setType(MessageType.REQUEST);
+                message.setContent("i need more resources");
                 send(message);
             }
         }
@@ -60,13 +61,12 @@ public class TestAgent2 extends Agent {
 
         @Override
         protected void doCycle() {
-            Message message = receive(MessageType.ACCEPT_PROPOSAL);
+            MessageEntity message = receive(MessageType.ACCEPT_PROPOSAL);
             if (message != null) {
-                Message response = new Message();
-                response.type = MessageType.AGREE.ordinal();
-                response.sender = getEntity();
-                response.receivers = new AgentEntity[]{message.sender};
-                response.content = message.content;
+                MessageEntity response = MessageEntityImpl.createResponse(message);
+                response.setType(MessageType.AGREE);
+                message.setSender(getEntity());
+                response.setContent(message.getContent());
                 send(response);
             }
         }
@@ -76,14 +76,14 @@ public class TestAgent2 extends Agent {
 
         @Override
         protected void doCycle() {
-            Message message = receive(MessageType.CONFIRM);
+            MessageEntity message = receive(MessageType.CONFIRM);
             if (message == null) {
                 receive(MessageType.REFUSE); // drop refused
                 return;
             }
 
             resources++;
-            money -= Integer.valueOf(message.content);
+            money -= Integer.valueOf(message.getContent());
             bought++;
         }
     }

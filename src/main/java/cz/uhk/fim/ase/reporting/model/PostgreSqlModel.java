@@ -42,7 +42,7 @@ public class PostgreSqlModel extends LoggedObject implements Model {
                         PreparedStatement query = db.prepareStatement("INSERT INTO reports (instance, tick, agent, key, value) VALUES (?, ?, ?, ?, ?)");
                         query.setString(1, Config.get().instance);
                         query.setLong(2, TickManager.get().getCurrentTick());
-                        query.setString(3, agent.getEntity().id);
+                        query.setString(3, agent.getEntity().getId());
                         query.setString(4, key);
                         query.setString(5, value);
                         query.execute();

@@ -1,13 +1,14 @@
 package cz.uhk.fim.ase.container;
 
 import cz.uhk.fim.ase.common.LoggedObject;
-import cz.uhk.fim.ase.communication.Listener;
+import cz.uhk.fim.ase.communication.GlobalListener;
 import cz.uhk.fim.ase.communication.MessagesQueue;
-import cz.uhk.fim.ase.communication.Sender;
-import cz.uhk.fim.ase.communication.impl.DiscoverClient;
-import cz.uhk.fim.ase.communication.impl.DiscoverListener;
-import cz.uhk.fim.ase.communication.impl.IceListener;
-import cz.uhk.fim.ase.communication.impl.IceSender;
+import cz.uhk.fim.ase.communication.MessagesSender;
+import cz.uhk.fim.ase.communication.impl.GlobalListenerImpl;
+import cz.uhk.fim.ase.communication.impl.GlobalSenderImpl;
+import cz.uhk.fim.ase.communication.impl.MessagesListenerImpl;
+import cz.uhk.fim.ase.communication.impl.MessagesQueueImpl;
+import cz.uhk.fim.ase.communication.impl.MessagesSenderImpl;
 import cz.uhk.fim.ase.configuration.Config;
 import cz.uhk.fim.ase.container.agents.Agent;
 import cz.uhk.fim.ase.reporting.ReportManager;
@@ -29,8 +30,8 @@ import java.util.concurrent.Executors;
 abstract public class Container extends LoggedObject {
 
     // services
-    private Sender sender = new IceSender();
-    private MessagesQueue queue = new MessagesQueue();
+    private MessagesSender sender = new MessagesSenderImpl();
+    private MessagesQueue queue = new MessagesQueueImpl();
     private ReportManager reportManager;
 
     // agents
@@ -38,10 +39,8 @@ abstract public class Container extends LoggedObject {
     private ExecutorService executor;
 
     // listeners
-    private IceListener listener;
-    private Thread listenerThread;
-    private DiscoverListener discoverListener;
-    private Thread discoverListenerThread;
+    private MessagesListenerImpl listener;
+    private GlobalListener discoverListener;
 
     private String address;
 
@@ -60,20 +59,8 @@ abstract public class Container extends LoggedObject {
         return address;
     }
 
-    public Sender getSender() {
+    public MessagesSender getSender() {
         return sender;
-    }
-
-    public Listener getListener() {
-        return listener;
-    }
-
-    public DiscoverListener getDiscoverListener() {
-        return discoverListener;
-    }
-
-    public ReportManager getReportManager() {
-        return reportManager;
     }
 
     public MessagesQueue getQueue() {
@@ -85,8 +72,8 @@ abstract public class Container extends LoggedObject {
     }
 
     public void addAgent(Agent agent) {
-        getLogger().info("Registering agent {}", agent.getEntity());
-        agents.put(agent.getEntity().id, agent);
+        getLogger().debug("Registering agent {}", agent.getEntity());
+        agents.put(agent.getEntity().getId(), agent);
         Registry.get().register(agent.getEntity());
     }
 
@@ -96,7 +83,7 @@ abstract public class Container extends LoggedObject {
 
     public void run() {
         // run listener for messages (in background)
-        listenerThread = new Thread(new Runnable() {
+        Thread listenerThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 registerListener();
@@ -105,7 +92,7 @@ abstract public class Container extends LoggedObject {
         listenerThread.start();
 
         // run listener for discover request (in background)
-        discoverListenerThread = new Thread(new Runnable() {
+        Thread discoverListenerThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 registerDiscoverListener();
@@ -153,27 +140,29 @@ abstract public class Container extends LoggedObject {
 
     private String discoverAnotherContainers() {
         getLogger().info("Discovering containers on {}", "239.255.1.1:10000");
-        DiscoverClient client = new DiscoverClient();
+        GlobalSenderImpl client = new GlobalSenderImpl();
         return client.process(Config.get().container.discoverAddress, Config.get().container.discoverPort);
     }
 
     private void registerListener() {
         getLogger().info("Creating listener on container {}", getAddress());
-        listener = new IceListener(this);
-        listener.listen();
+        listener = new MessagesListenerImpl();
+        listener.setQueue(queue);
+        listener.listen(getAddress());
     }
 
     private void registerDiscoverListener() {
         getLogger().info("Creating discover listener on {}", "239.255.1.1:10000");
-        discoverListener = new DiscoverListener(this);
-        discoverListener.listen(Config.get().container.discoverAddress, Config.get().container.discoverPort);
+        discoverListener = new GlobalListenerImpl();
+        discoverListener.setContainer(this);
+        discoverListener.listen(Config.get().container.discoverAddress + ":" + Config.get().container.discoverPort);
     }
 
     /**
      * Runs agents tasks
      */
     private Boolean nextTick() {
-        //getLogger().info("Executing tick #" + TickManager.get().getCurrentTick());
+        getLogger().debug("Executing tick #" + TickManager.get().getCurrentTick());
 
         // collect tasks
         Set<Callable<Object>> todoList = new HashSet<Callable<Object>>();
@@ -220,18 +209,6 @@ abstract public class Container extends LoggedObject {
         executor.shutdownNow();
 
         // TODO: how to kill ice threads?
-        try {
-            listener.getCommunicator().shutdown();
-        } catch (Exception e) {
-            // skip
-        }
-
-        try {
-            discoverListener.getCommunicator().shutdown();
-        } catch (Exception e) {
-            // skip
-        }
-
         Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
         System.out.println(threadSet);
     }

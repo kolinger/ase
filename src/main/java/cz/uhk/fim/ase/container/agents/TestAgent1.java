@@ -1,11 +1,12 @@
 package cz.uhk.fim.ase.container.agents;
 
-import cz.uhk.fim.ase.communication.MessagesQueue;
-import cz.uhk.fim.ase.communication.Sender;
+import cz.uhk.fim.ase.communication.MessagesSender;
+import cz.uhk.fim.ase.communication.impl.MessagesQueueImpl;
 import cz.uhk.fim.ase.container.agents.behaviours.InfiniteBehaviour;
+import cz.uhk.fim.ase.model.MessageEntity;
 import cz.uhk.fim.ase.model.MessageType;
-import slices.AgentEntity;
-import slices.Message;
+import cz.uhk.fim.ase.model.AgentEntity;
+import cz.uhk.fim.ase.model.impl.MessageEntityImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class TestAgent1 extends Agent {
     private Integer resources = 10000;
     private Integer money = 100;
 
-    public TestAgent1(AgentEntity entity, Sender sender, MessagesQueue queue) {
+    public TestAgent1(AgentEntity entity, MessagesSender sender, MessagesQueueImpl queue) {
         super(entity, sender, queue);
     }
 
@@ -43,17 +44,16 @@ public class TestAgent1 extends Agent {
 
         @Override
         protected void doCycle() {
-            Message message = receive(MessageType.REQUEST);
+            MessageEntity message = receive(MessageType.REQUEST);
             if (message == null) {
                 return;
             }
 
-            Message response = new Message();
-            response.sender = getEntity();
-            response.receivers = new AgentEntity[]{message.sender};
-            response.type = MessageType.ACCEPT_PROPOSAL.ordinal();
+            MessageEntity response = MessageEntityImpl.createResponse(message);
+            response.setSender(getEntity());
+            response.setType(MessageType.ACCEPT_PROPOSAL);
             Integer price = new Random().nextInt(9) + 1;
-            response.content = price.toString();
+            response.setContent(price.toString());
             send(response);
         }
     }
@@ -62,24 +62,23 @@ public class TestAgent1 extends Agent {
 
         @Override
         protected void doCycle() {
-            Message message = receive(MessageType.AGREE);
+            MessageEntity message = receive(MessageType.AGREE);
             if (message == null) {
                 return;
             }
 
-            Message response = new Message();
-            response.sender = getEntity();
-            response.receivers = new AgentEntity[]{message.sender};
+            MessageEntity response = MessageEntityImpl.createResponse(message);
+            response.setSender(getEntity());
 
             if (resources > 0) {
-                response.type = MessageType.CONFIRM.ordinal();
-                response.content = message.content;
+                response.setType(MessageType.CONFIRM);
+                response.setContent(message.getContent());
                 resources--;
-                money += Integer.valueOf(message.content);
+                money += Integer.valueOf(message.getContent());
                 sold++;
             } else {
-                response.type = MessageType.REFUSE.ordinal();
-                response.content = "sorry, i don't have it";
+                response.setType(MessageType.REFUSE);
+                response.setContent("sorry, i don't have it");
             }
 
             send(response);

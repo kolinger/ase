@@ -1,7 +1,7 @@
 package cz.uhk.fim.ase.container;
 
 import cz.uhk.fim.ase.common.LoggedObject;
-import slices.AgentEntity;
+import cz.uhk.fim.ase.model.AgentEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class Registry extends LoggedObject {
 
         while (true) {
             int index = new Random().nextInt(size);
-            if (agents.get(index).properties.get("type").equals("1")) {
+            if (agents.get(index).getProperties().get("type").equals("1")) {
                 return agents.get(index);
             }
         }
