@@ -24,14 +24,24 @@ public class GlobalListenerImpl extends LoggedObject implements GlobalListener {
     public void listen(String address) {
         Communicator communicator = createCommunicator();
 
-        ObjectAdapter adapter = communicator.createObjectAdapterWithEndpoints("DiscoverHello", "tcp");
-        Ice.ObjectPrx hello = adapter.addWithUUID(new GlobalHelloMessage(container));
-        adapter.activate();
-
+        // main adapter
         String[] parts = address.split(":");
-        ObjectAdapter discoverAdapter = communicator.createObjectAdapterWithEndpoints("Discover",
+        ObjectAdapter discoverAdapter = communicator.createObjectAdapterWithEndpoints("Global",
                 "udp -h " + parts[0] + " -p " + parts[1]);
-        discoverAdapter.add(new GlobalHandler(hello), communicator.stringToIdentity("discover"));
+
+        // hello adapter
+        ObjectAdapter helloAdapter = communicator.createObjectAdapterWithEndpoints("HelloResponse", "tcp");
+        Ice.ObjectPrx helloResponse = helloAdapter.addWithUUID(new GlobalHelloMessage(container));
+        helloAdapter.activate();
+        discoverAdapter.add(new GlobalHandler(helloResponse), communicator.stringToIdentity("hello"));
+
+        // sync adapter
+        ObjectAdapter syncAdapter = communicator.createObjectAdapterWithEndpoints("SyncResponse", "tcp");
+        Ice.ObjectPrx syncResponse = syncAdapter.addWithUUID(new GlobalSyncMessage());
+        syncAdapter.activate();
+        discoverAdapter.add(new GlobalHandler(syncResponse), communicator.stringToIdentity("sync"));
+
+        // run
         discoverAdapter.activate();
 
         communicator.waitForShutdown();

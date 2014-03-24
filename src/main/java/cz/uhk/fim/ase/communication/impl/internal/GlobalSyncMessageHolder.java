@@ -20,18 +20,35 @@
 
 package cz.uhk.fim.ase.communication.impl.internal;
 
-public final class GlobalHelloMessagePrxHolder
+public final class GlobalSyncMessageHolder extends Ice.ObjectHolderBase<GlobalSyncMessage>
 {
     public
-    GlobalHelloMessagePrxHolder()
+    GlobalSyncMessageHolder()
     {
     }
 
     public
-    GlobalHelloMessagePrxHolder(GlobalHelloMessagePrx value)
+    GlobalSyncMessageHolder(GlobalSyncMessage value)
     {
         this.value = value;
     }
 
-    public GlobalHelloMessagePrx value;
+    public void
+    patch(Ice.Object v)
+    {
+        if(v == null || v instanceof GlobalSyncMessage)
+        {
+            value = (GlobalSyncMessage)v;
+        }
+        else
+        {
+            IceInternal.Ex.throwUOE(type(), v);
+        }
+    }
+
+    public String
+    type()
+    {
+        return _GlobalSyncMessageDisp.ice_staticId();
+    }
 }

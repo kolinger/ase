@@ -20,8 +20,23 @@
 
 package cz.uhk.fim.ase.communication.impl.internal;
 
-public interface _GlobalHandlerDel extends Ice._ObjectDel
+public abstract class Callback_GlobalSyncMessage_getTick extends Ice.TwowayCallback
 {
-    void lookup(GlobalReplyPrx reply, java.util.Map<String, String> __ctx, Ice.Instrumentation.InvocationObserver __obsv)
-        throws IceInternal.LocalExceptionWrapper;
+    public abstract void response(long __ret);
+
+    public final void __completed(Ice.AsyncResult __result)
+    {
+        GlobalSyncMessagePrx __proxy = (GlobalSyncMessagePrx)__result.getProxy();
+        long __ret = 0;
+        try
+        {
+            __ret = __proxy.end_getTick(__result);
+        }
+        catch(Ice.LocalException __ex)
+        {
+            exception(__ex);
+            return;
+        }
+        response(__ret);
+    }
 }

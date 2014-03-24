@@ -11,6 +11,9 @@ public class System {
     // misc
     public Integer threadsPool = 100;
 
+    // identification
+    public String id;
+
     // direct sender
     public String directSenderAddress = "localhost";
     public Integer directSenderPort = 10000;

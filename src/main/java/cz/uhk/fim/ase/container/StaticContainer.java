@@ -15,7 +15,7 @@ public class StaticContainer extends Container {
     }
 
     protected void setup() {
-        Integer max = Config.get().container.agentsCount / 2;
+        Integer max = Config.get().environment.agentsCount / 2;
         for (Integer count = 1; count <= max; count++) {
             addAgent(new TestAgent1(AgentEntityImpl.create(getAddress(), "1"), getSender(), getQueue()));
             addAgent(new TestAgent2(AgentEntityImpl.create(getAddress(), "2"), getSender(), getQueue()));

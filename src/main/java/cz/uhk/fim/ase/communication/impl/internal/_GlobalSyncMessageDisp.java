@@ -20,7 +20,7 @@
 
 package cz.uhk.fim.ase.communication.impl.internal;
 
-public abstract class _GlobalHandlerDisp extends Ice.ObjectImpl implements GlobalHandler
+public abstract class _GlobalSyncMessageDisp extends Ice.ObjectImpl implements GlobalSyncMessage
 {
     protected void
     ice_copyStateFrom(Ice.Object __obj)
@@ -32,7 +32,7 @@ public abstract class _GlobalHandlerDisp extends Ice.ObjectImpl implements Globa
     public static final String[] __ids =
     {
         "::Ice::Object",
-        "::internal::GlobalHandler"
+        "::internal::GlobalSyncMessage"
     };
 
     public boolean ice_isA(String s)
@@ -70,30 +70,46 @@ public abstract class _GlobalHandlerDisp extends Ice.ObjectImpl implements Globa
         return __ids[1];
     }
 
-    public final void lookup(GlobalReplyPrx reply)
+    public final String getId()
     {
-        lookup(reply, null);
+        return getId(null);
     }
 
-    public static Ice.DispatchStatus ___lookup(GlobalHandler __obj, IceInternal.Incoming __inS, Ice.Current __current)
+    public final long getTick()
+    {
+        return getTick(null);
+    }
+
+    public static Ice.DispatchStatus ___getTick(GlobalSyncMessage __obj, IceInternal.Incoming __inS, Ice.Current __current)
     {
         __checkMode(Ice.OperationMode.Normal, __current.mode);
-        IceInternal.BasicStream __is = __inS.startReadParams();
-        GlobalReplyPrx reply;
-        reply = GlobalReplyPrxHelper.__read(__is);
-        __inS.endReadParams();
-        __obj.lookup(reply, __current);
-        __inS.__writeEmptyParams();
+        __inS.readEmptyParams();
+        long __ret = __obj.getTick(__current);
+        IceInternal.BasicStream __os = __inS.__startWriteParams(Ice.FormatType.DefaultFormat);
+        __os.writeLong(__ret);
+        __inS.__endWriteParams(true);
+        return Ice.DispatchStatus.DispatchOK;
+    }
+
+    public static Ice.DispatchStatus ___getId(GlobalSyncMessage __obj, IceInternal.Incoming __inS, Ice.Current __current)
+    {
+        __checkMode(Ice.OperationMode.Normal, __current.mode);
+        __inS.readEmptyParams();
+        String __ret = __obj.getId(__current);
+        IceInternal.BasicStream __os = __inS.__startWriteParams(Ice.FormatType.DefaultFormat);
+        __os.writeString(__ret);
+        __inS.__endWriteParams(true);
         return Ice.DispatchStatus.DispatchOK;
     }
 
     private final static String[] __all =
     {
+        "getId",
+        "getTick",
         "ice_id",
         "ice_ids",
         "ice_isA",
-        "ice_ping",
-        "lookup"
+        "ice_ping"
     };
 
     public Ice.DispatchStatus __dispatch(IceInternal.Incoming in, Ice.Current __current)
@@ -108,23 +124,27 @@ public abstract class _GlobalHandlerDisp extends Ice.ObjectImpl implements Globa
         {
             case 0:
             {
-                return ___ice_id(this, in, __current);
+                return ___getId(this, in, __current);
             }
             case 1:
             {
-                return ___ice_ids(this, in, __current);
+                return ___getTick(this, in, __current);
             }
             case 2:
             {
-                return ___ice_isA(this, in, __current);
+                return ___ice_id(this, in, __current);
             }
             case 3:
             {
-                return ___ice_ping(this, in, __current);
+                return ___ice_ids(this, in, __current);
             }
             case 4:
             {
-                return ___lookup(this, in, __current);
+                return ___ice_isA(this, in, __current);
+            }
+            case 5:
+            {
+                return ___ice_ping(this, in, __current);
             }
         }
 

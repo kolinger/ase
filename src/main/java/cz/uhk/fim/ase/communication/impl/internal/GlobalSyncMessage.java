@@ -20,8 +20,8 @@
 
 package cz.uhk.fim.ase.communication.impl.internal;
 
-public interface _MessagesHandlerDel extends Ice._ObjectDel
+public interface GlobalSyncMessage extends Ice.Object,
+                                           _GlobalSyncMessageOperations, _GlobalSyncMessageOperationsNC
 {
-    void handle(cz.uhk.fim.ase.model.internal.MessageEntity message, java.util.Map<String, String> __ctx, Ice.Instrumentation.InvocationObserver __obsv)
-        throws IceInternal.LocalExceptionWrapper;
+    public static final long serialVersionUID = 2082699133L;
 }

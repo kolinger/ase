@@ -20,6 +20,18 @@
 
 package cz.uhk.fim.ase.communication.impl.internal;
 
-public abstract class Callback_GlobalReply_reply extends Ice.OnewayCallback
+public final class GlobalSyncMessagePrxHolder
 {
+    public
+    GlobalSyncMessagePrxHolder()
+    {
+    }
+
+    public
+    GlobalSyncMessagePrxHolder(GlobalSyncMessagePrx value)
+    {
+        this.value = value;
+    }
+
+    public GlobalSyncMessagePrx value;
 }

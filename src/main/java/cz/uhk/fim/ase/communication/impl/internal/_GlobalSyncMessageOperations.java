@@ -20,11 +20,9 @@
 
 package cz.uhk.fim.ase.communication.impl.internal;
 
-public interface _GlobalHelloMessageDel extends Ice._ObjectDel
+public interface _GlobalSyncMessageOperations
 {
-    String getInstanceId(java.util.Map<String, String> __ctx, Ice.Instrumentation.InvocationObserver __obsv)
-        throws IceInternal.LocalExceptionWrapper;
+    long getTick(Ice.Current __current);
 
-    cz.uhk.fim.ase.model.internal.AgentEntity[] getAgents(java.util.Map<String, String> __ctx, Ice.Instrumentation.InvocationObserver __obsv)
-        throws IceInternal.LocalExceptionWrapper;
+    String getId(Ice.Current __current);
 }

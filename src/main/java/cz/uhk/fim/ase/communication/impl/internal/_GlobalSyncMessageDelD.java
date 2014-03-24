@@ -20,14 +20,14 @@
 
 package cz.uhk.fim.ase.communication.impl.internal;
 
-public final class _GlobalHelloMessageDelD extends Ice._ObjectDelD implements _GlobalHelloMessageDel
+public final class _GlobalSyncMessageDelD extends Ice._ObjectDelD implements _GlobalSyncMessageDel
 {
-    public cz.uhk.fim.ase.model.internal.AgentEntity[] getAgents(java.util.Map<String, String> __ctx, Ice.Instrumentation.InvocationObserver __observer)
+    public String getId(java.util.Map<String, String> __ctx, Ice.Instrumentation.InvocationObserver __observer)
         throws IceInternal.LocalExceptionWrapper
     {
         final Ice.Current __current = new Ice.Current();
-        __initCurrent(__current, "getAgents", Ice.OperationMode.Normal, __ctx);
-        final cz.uhk.fim.ase.model.internal.AgentsListHolder __result = new cz.uhk.fim.ase.model.internal.AgentsListHolder();
+        __initCurrent(__current, "getId", Ice.OperationMode.Normal, __ctx);
+        final Ice.StringHolder __result = new Ice.StringHolder();
         IceInternal.Direct __direct = null;
         try
         {
@@ -35,16 +35,16 @@ public final class _GlobalHelloMessageDelD extends Ice._ObjectDelD implements _G
             {
                 public Ice.DispatchStatus run(Ice.Object __obj)
                 {
-                    GlobalHelloMessage __servant = null;
-                    if(__obj == null || __obj instanceof GlobalHelloMessage)
+                    GlobalSyncMessage __servant = null;
+                    if(__obj == null || __obj instanceof GlobalSyncMessage)
                     {
-                        __servant = (GlobalHelloMessage)__obj;
+                        __servant = (GlobalSyncMessage)__obj;
                     }
                     else
                     {
                         throw new Ice.OperationNotExistException(__current.id, __current.facet, __current.operation);
                     }
-                    __result.value = __servant.getAgents(__current);
+                    __result.value = __servant.getId(__current);
                     return Ice.DispatchStatus.DispatchOK;
                 }
             };
@@ -74,12 +74,12 @@ public final class _GlobalHelloMessageDelD extends Ice._ObjectDelD implements _G
         return __result.value;
     }
 
-    public String getInstanceId(java.util.Map<String, String> __ctx, Ice.Instrumentation.InvocationObserver __observer)
+    public long getTick(java.util.Map<String, String> __ctx, Ice.Instrumentation.InvocationObserver __observer)
         throws IceInternal.LocalExceptionWrapper
     {
         final Ice.Current __current = new Ice.Current();
-        __initCurrent(__current, "getInstanceId", Ice.OperationMode.Normal, __ctx);
-        final Ice.StringHolder __result = new Ice.StringHolder();
+        __initCurrent(__current, "getTick", Ice.OperationMode.Normal, __ctx);
+        final Ice.LongHolder __result = new Ice.LongHolder();
         IceInternal.Direct __direct = null;
         try
         {
@@ -87,16 +87,16 @@ public final class _GlobalHelloMessageDelD extends Ice._ObjectDelD implements _G
             {
                 public Ice.DispatchStatus run(Ice.Object __obj)
                 {
-                    GlobalHelloMessage __servant = null;
-                    if(__obj == null || __obj instanceof GlobalHelloMessage)
+                    GlobalSyncMessage __servant = null;
+                    if(__obj == null || __obj instanceof GlobalSyncMessage)
                     {
-                        __servant = (GlobalHelloMessage)__obj;
+                        __servant = (GlobalSyncMessage)__obj;
                     }
                     else
                     {
                         throw new Ice.OperationNotExistException(__current.id, __current.facet, __current.operation);
                     }
-                    __result.value = __servant.getInstanceId(__current);
+                    __result.value = __servant.getTick(__current);
                     return Ice.DispatchStatus.DispatchOK;
                 }
             };

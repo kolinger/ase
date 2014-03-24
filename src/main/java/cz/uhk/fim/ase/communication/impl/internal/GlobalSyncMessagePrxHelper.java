@@ -20,27 +20,27 @@
 
 package cz.uhk.fim.ase.communication.impl.internal;
 
-public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase implements GlobalHelloMessagePrx
+public final class GlobalSyncMessagePrxHelper extends Ice.ObjectPrxHelperBase implements GlobalSyncMessagePrx
 {
-    private static final String __getAgents_name = "getAgents";
+    private static final String __getId_name = "getId";
 
-    public cz.uhk.fim.ase.model.internal.AgentEntity[] getAgents()
+    public String getId()
     {
-        return getAgents(null, false);
+        return getId(null, false);
     }
 
-    public cz.uhk.fim.ase.model.internal.AgentEntity[] getAgents(java.util.Map<String, String> __ctx)
+    public String getId(java.util.Map<String, String> __ctx)
     {
-        return getAgents(__ctx, true);
+        return getId(__ctx, true);
     }
 
-    private cz.uhk.fim.ase.model.internal.AgentEntity[] getAgents(java.util.Map<String, String> __ctx, boolean __explicitCtx)
+    private String getId(java.util.Map<String, String> __ctx, boolean __explicitCtx)
     {
         if(__explicitCtx && __ctx == null)
         {
             __ctx = _emptyContext;
         }
-        final Ice.Instrumentation.InvocationObserver __observer = IceInternal.ObserverHelper.get(this, "getAgents", __ctx);
+        final Ice.Instrumentation.InvocationObserver __observer = IceInternal.ObserverHelper.get(this, "getId", __ctx);
         int __cnt = 0;
         try
         {
@@ -49,10 +49,10 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
                 Ice._ObjectDel __delBase = null;
                 try
                 {
-                    __checkTwowayOnly("getAgents");
+                    __checkTwowayOnly("getId");
                     __delBase = __getDelegate(false);
-                    _GlobalHelloMessageDel __del = (_GlobalHelloMessageDel)__delBase;
-                    return __del.getAgents(__ctx, __observer);
+                    _GlobalSyncMessageDel __del = (_GlobalSyncMessageDel)__delBase;
+                    return __del.getId(__ctx, __observer);
                 }
                 catch(IceInternal.LocalExceptionWrapper __ex)
                 {
@@ -73,43 +73,43 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
         }
     }
 
-    public Ice.AsyncResult begin_getAgents()
+    public Ice.AsyncResult begin_getId()
     {
-        return begin_getAgents(null, false, null);
+        return begin_getId(null, false, null);
     }
 
-    public Ice.AsyncResult begin_getAgents(java.util.Map<String, String> __ctx)
+    public Ice.AsyncResult begin_getId(java.util.Map<String, String> __ctx)
     {
-        return begin_getAgents(__ctx, true, null);
+        return begin_getId(__ctx, true, null);
     }
 
-    public Ice.AsyncResult begin_getAgents(Ice.Callback __cb)
+    public Ice.AsyncResult begin_getId(Ice.Callback __cb)
     {
-        return begin_getAgents(null, false, __cb);
+        return begin_getId(null, false, __cb);
     }
 
-    public Ice.AsyncResult begin_getAgents(java.util.Map<String, String> __ctx, Ice.Callback __cb)
+    public Ice.AsyncResult begin_getId(java.util.Map<String, String> __ctx, Ice.Callback __cb)
     {
-        return begin_getAgents(__ctx, true, __cb);
+        return begin_getId(__ctx, true, __cb);
     }
 
-    public Ice.AsyncResult begin_getAgents(Callback_GlobalHelloMessage_getAgents __cb)
+    public Ice.AsyncResult begin_getId(Callback_GlobalSyncMessage_getId __cb)
     {
-        return begin_getAgents(null, false, __cb);
+        return begin_getId(null, false, __cb);
     }
 
-    public Ice.AsyncResult begin_getAgents(java.util.Map<String, String> __ctx, Callback_GlobalHelloMessage_getAgents __cb)
+    public Ice.AsyncResult begin_getId(java.util.Map<String, String> __ctx, Callback_GlobalSyncMessage_getId __cb)
     {
-        return begin_getAgents(__ctx, true, __cb);
+        return begin_getId(__ctx, true, __cb);
     }
 
-    private Ice.AsyncResult begin_getAgents(java.util.Map<String, String> __ctx, boolean __explicitCtx, IceInternal.CallbackBase __cb)
+    private Ice.AsyncResult begin_getId(java.util.Map<String, String> __ctx, boolean __explicitCtx, IceInternal.CallbackBase __cb)
     {
-        __checkAsyncTwowayOnly(__getAgents_name);
-        IceInternal.OutgoingAsync __result = new IceInternal.OutgoingAsync(this, __getAgents_name, __cb);
+        __checkAsyncTwowayOnly(__getId_name);
+        IceInternal.OutgoingAsync __result = new IceInternal.OutgoingAsync(this, __getId_name, __cb);
         try
         {
-            __result.__prepare(__getAgents_name, Ice.OperationMode.Normal, __ctx, __explicitCtx);
+            __result.__prepare(__getId_name, Ice.OperationMode.Normal, __ctx, __explicitCtx);
             __result.__writeEmptyParams();
             __result.__send(true);
         }
@@ -120,141 +120,9 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
         return __result;
     }
 
-    public cz.uhk.fim.ase.model.internal.AgentEntity[] end_getAgents(Ice.AsyncResult __result)
+    public String end_getId(Ice.AsyncResult __result)
     {
-        Ice.AsyncResult.__check(__result, this, __getAgents_name);
-        boolean __ok = __result.__wait();
-        try
-        {
-            if(!__ok)
-            {
-                try
-                {
-                    __result.__throwUserException();
-                }
-                catch(Ice.UserException __ex)
-                {
-                    throw new Ice.UnknownUserException(__ex.ice_name(), __ex);
-                }
-            }
-            IceInternal.BasicStream __is = __result.__startReadParams();
-            cz.uhk.fim.ase.model.internal.AgentEntity[] __ret;
-            __ret = cz.uhk.fim.ase.model.internal.AgentsListHelper.read(__is);
-            __result.__endReadParams();
-            return __ret;
-        }
-        catch(Ice.LocalException ex)
-        {
-            Ice.Instrumentation.InvocationObserver __obsv = __result.__getObserver();
-            if(__obsv != null)
-            {
-                __obsv.failed(ex.ice_name());
-            }
-            throw ex;
-        }
-    }
-
-    private static final String __getInstanceId_name = "getInstanceId";
-
-    public String getInstanceId()
-    {
-        return getInstanceId(null, false);
-    }
-
-    public String getInstanceId(java.util.Map<String, String> __ctx)
-    {
-        return getInstanceId(__ctx, true);
-    }
-
-    private String getInstanceId(java.util.Map<String, String> __ctx, boolean __explicitCtx)
-    {
-        if(__explicitCtx && __ctx == null)
-        {
-            __ctx = _emptyContext;
-        }
-        final Ice.Instrumentation.InvocationObserver __observer = IceInternal.ObserverHelper.get(this, "getInstanceId", __ctx);
-        int __cnt = 0;
-        try
-        {
-            while(true)
-            {
-                Ice._ObjectDel __delBase = null;
-                try
-                {
-                    __checkTwowayOnly("getInstanceId");
-                    __delBase = __getDelegate(false);
-                    _GlobalHelloMessageDel __del = (_GlobalHelloMessageDel)__delBase;
-                    return __del.getInstanceId(__ctx, __observer);
-                }
-                catch(IceInternal.LocalExceptionWrapper __ex)
-                {
-                    __handleExceptionWrapper(__delBase, __ex, __observer);
-                }
-                catch(Ice.LocalException __ex)
-                {
-                    __cnt = __handleException(__delBase, __ex, null, __cnt, __observer);
-                }
-            }
-        }
-        finally
-        {
-            if(__observer != null)
-            {
-                __observer.detach();
-            }
-        }
-    }
-
-    public Ice.AsyncResult begin_getInstanceId()
-    {
-        return begin_getInstanceId(null, false, null);
-    }
-
-    public Ice.AsyncResult begin_getInstanceId(java.util.Map<String, String> __ctx)
-    {
-        return begin_getInstanceId(__ctx, true, null);
-    }
-
-    public Ice.AsyncResult begin_getInstanceId(Ice.Callback __cb)
-    {
-        return begin_getInstanceId(null, false, __cb);
-    }
-
-    public Ice.AsyncResult begin_getInstanceId(java.util.Map<String, String> __ctx, Ice.Callback __cb)
-    {
-        return begin_getInstanceId(__ctx, true, __cb);
-    }
-
-    public Ice.AsyncResult begin_getInstanceId(Callback_GlobalHelloMessage_getInstanceId __cb)
-    {
-        return begin_getInstanceId(null, false, __cb);
-    }
-
-    public Ice.AsyncResult begin_getInstanceId(java.util.Map<String, String> __ctx, Callback_GlobalHelloMessage_getInstanceId __cb)
-    {
-        return begin_getInstanceId(__ctx, true, __cb);
-    }
-
-    private Ice.AsyncResult begin_getInstanceId(java.util.Map<String, String> __ctx, boolean __explicitCtx, IceInternal.CallbackBase __cb)
-    {
-        __checkAsyncTwowayOnly(__getInstanceId_name);
-        IceInternal.OutgoingAsync __result = new IceInternal.OutgoingAsync(this, __getInstanceId_name, __cb);
-        try
-        {
-            __result.__prepare(__getInstanceId_name, Ice.OperationMode.Normal, __ctx, __explicitCtx);
-            __result.__writeEmptyParams();
-            __result.__send(true);
-        }
-        catch(Ice.LocalException __ex)
-        {
-            __result.__exceptionAsync(__ex);
-        }
-        return __result;
-    }
-
-    public String end_getInstanceId(Ice.AsyncResult __result)
-    {
-        Ice.AsyncResult.__check(__result, this, __getInstanceId_name);
+        Ice.AsyncResult.__check(__result, this, __getId_name);
         boolean __ok = __result.__wait();
         try
         {
@@ -286,20 +154,152 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
         }
     }
 
-    public static GlobalHelloMessagePrx checkedCast(Ice.ObjectPrx __obj)
+    private static final String __getTick_name = "getTick";
+
+    public long getTick()
     {
-        GlobalHelloMessagePrx __d = null;
+        return getTick(null, false);
+    }
+
+    public long getTick(java.util.Map<String, String> __ctx)
+    {
+        return getTick(__ctx, true);
+    }
+
+    private long getTick(java.util.Map<String, String> __ctx, boolean __explicitCtx)
+    {
+        if(__explicitCtx && __ctx == null)
+        {
+            __ctx = _emptyContext;
+        }
+        final Ice.Instrumentation.InvocationObserver __observer = IceInternal.ObserverHelper.get(this, "getTick", __ctx);
+        int __cnt = 0;
+        try
+        {
+            while(true)
+            {
+                Ice._ObjectDel __delBase = null;
+                try
+                {
+                    __checkTwowayOnly("getTick");
+                    __delBase = __getDelegate(false);
+                    _GlobalSyncMessageDel __del = (_GlobalSyncMessageDel)__delBase;
+                    return __del.getTick(__ctx, __observer);
+                }
+                catch(IceInternal.LocalExceptionWrapper __ex)
+                {
+                    __handleExceptionWrapper(__delBase, __ex, __observer);
+                }
+                catch(Ice.LocalException __ex)
+                {
+                    __cnt = __handleException(__delBase, __ex, null, __cnt, __observer);
+                }
+            }
+        }
+        finally
+        {
+            if(__observer != null)
+            {
+                __observer.detach();
+            }
+        }
+    }
+
+    public Ice.AsyncResult begin_getTick()
+    {
+        return begin_getTick(null, false, null);
+    }
+
+    public Ice.AsyncResult begin_getTick(java.util.Map<String, String> __ctx)
+    {
+        return begin_getTick(__ctx, true, null);
+    }
+
+    public Ice.AsyncResult begin_getTick(Ice.Callback __cb)
+    {
+        return begin_getTick(null, false, __cb);
+    }
+
+    public Ice.AsyncResult begin_getTick(java.util.Map<String, String> __ctx, Ice.Callback __cb)
+    {
+        return begin_getTick(__ctx, true, __cb);
+    }
+
+    public Ice.AsyncResult begin_getTick(Callback_GlobalSyncMessage_getTick __cb)
+    {
+        return begin_getTick(null, false, __cb);
+    }
+
+    public Ice.AsyncResult begin_getTick(java.util.Map<String, String> __ctx, Callback_GlobalSyncMessage_getTick __cb)
+    {
+        return begin_getTick(__ctx, true, __cb);
+    }
+
+    private Ice.AsyncResult begin_getTick(java.util.Map<String, String> __ctx, boolean __explicitCtx, IceInternal.CallbackBase __cb)
+    {
+        __checkAsyncTwowayOnly(__getTick_name);
+        IceInternal.OutgoingAsync __result = new IceInternal.OutgoingAsync(this, __getTick_name, __cb);
+        try
+        {
+            __result.__prepare(__getTick_name, Ice.OperationMode.Normal, __ctx, __explicitCtx);
+            __result.__writeEmptyParams();
+            __result.__send(true);
+        }
+        catch(Ice.LocalException __ex)
+        {
+            __result.__exceptionAsync(__ex);
+        }
+        return __result;
+    }
+
+    public long end_getTick(Ice.AsyncResult __result)
+    {
+        Ice.AsyncResult.__check(__result, this, __getTick_name);
+        boolean __ok = __result.__wait();
+        try
+        {
+            if(!__ok)
+            {
+                try
+                {
+                    __result.__throwUserException();
+                }
+                catch(Ice.UserException __ex)
+                {
+                    throw new Ice.UnknownUserException(__ex.ice_name(), __ex);
+                }
+            }
+            IceInternal.BasicStream __is = __result.__startReadParams();
+            long __ret;
+            __ret = __is.readLong();
+            __result.__endReadParams();
+            return __ret;
+        }
+        catch(Ice.LocalException ex)
+        {
+            Ice.Instrumentation.InvocationObserver __obsv = __result.__getObserver();
+            if(__obsv != null)
+            {
+                __obsv.failed(ex.ice_name());
+            }
+            throw ex;
+        }
+    }
+
+    public static GlobalSyncMessagePrx checkedCast(Ice.ObjectPrx __obj)
+    {
+        GlobalSyncMessagePrx __d = null;
         if(__obj != null)
         {
-            if(__obj instanceof GlobalHelloMessagePrx)
+            if(__obj instanceof GlobalSyncMessagePrx)
             {
-                __d = (GlobalHelloMessagePrx)__obj;
+                __d = (GlobalSyncMessagePrx)__obj;
             }
             else
             {
                 if(__obj.ice_isA(ice_staticId()))
                 {
-                    GlobalHelloMessagePrxHelper __h = new GlobalHelloMessagePrxHelper();
+                    GlobalSyncMessagePrxHelper __h = new GlobalSyncMessagePrxHelper();
                     __h.__copyFrom(__obj);
                     __d = __h;
                 }
@@ -308,20 +308,20 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
         return __d;
     }
 
-    public static GlobalHelloMessagePrx checkedCast(Ice.ObjectPrx __obj, java.util.Map<String, String> __ctx)
+    public static GlobalSyncMessagePrx checkedCast(Ice.ObjectPrx __obj, java.util.Map<String, String> __ctx)
     {
-        GlobalHelloMessagePrx __d = null;
+        GlobalSyncMessagePrx __d = null;
         if(__obj != null)
         {
-            if(__obj instanceof GlobalHelloMessagePrx)
+            if(__obj instanceof GlobalSyncMessagePrx)
             {
-                __d = (GlobalHelloMessagePrx)__obj;
+                __d = (GlobalSyncMessagePrx)__obj;
             }
             else
             {
                 if(__obj.ice_isA(ice_staticId(), __ctx))
                 {
-                    GlobalHelloMessagePrxHelper __h = new GlobalHelloMessagePrxHelper();
+                    GlobalSyncMessagePrxHelper __h = new GlobalSyncMessagePrxHelper();
                     __h.__copyFrom(__obj);
                     __d = __h;
                 }
@@ -330,9 +330,9 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
         return __d;
     }
 
-    public static GlobalHelloMessagePrx checkedCast(Ice.ObjectPrx __obj, String __facet)
+    public static GlobalSyncMessagePrx checkedCast(Ice.ObjectPrx __obj, String __facet)
     {
-        GlobalHelloMessagePrx __d = null;
+        GlobalSyncMessagePrx __d = null;
         if(__obj != null)
         {
             Ice.ObjectPrx __bb = __obj.ice_facet(__facet);
@@ -340,7 +340,7 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
             {
                 if(__bb.ice_isA(ice_staticId()))
                 {
-                    GlobalHelloMessagePrxHelper __h = new GlobalHelloMessagePrxHelper();
+                    GlobalSyncMessagePrxHelper __h = new GlobalSyncMessagePrxHelper();
                     __h.__copyFrom(__bb);
                     __d = __h;
                 }
@@ -352,9 +352,9 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
         return __d;
     }
 
-    public static GlobalHelloMessagePrx checkedCast(Ice.ObjectPrx __obj, String __facet, java.util.Map<String, String> __ctx)
+    public static GlobalSyncMessagePrx checkedCast(Ice.ObjectPrx __obj, String __facet, java.util.Map<String, String> __ctx)
     {
-        GlobalHelloMessagePrx __d = null;
+        GlobalSyncMessagePrx __d = null;
         if(__obj != null)
         {
             Ice.ObjectPrx __bb = __obj.ice_facet(__facet);
@@ -362,7 +362,7 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
             {
                 if(__bb.ice_isA(ice_staticId(), __ctx))
                 {
-                    GlobalHelloMessagePrxHelper __h = new GlobalHelloMessagePrxHelper();
+                    GlobalSyncMessagePrxHelper __h = new GlobalSyncMessagePrxHelper();
                     __h.__copyFrom(__bb);
                     __d = __h;
                 }
@@ -374,18 +374,18 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
         return __d;
     }
 
-    public static GlobalHelloMessagePrx uncheckedCast(Ice.ObjectPrx __obj)
+    public static GlobalSyncMessagePrx uncheckedCast(Ice.ObjectPrx __obj)
     {
-        GlobalHelloMessagePrx __d = null;
+        GlobalSyncMessagePrx __d = null;
         if(__obj != null)
         {
-            if(__obj instanceof GlobalHelloMessagePrx)
+            if(__obj instanceof GlobalSyncMessagePrx)
             {
-                __d = (GlobalHelloMessagePrx)__obj;
+                __d = (GlobalSyncMessagePrx)__obj;
             }
             else
             {
-                GlobalHelloMessagePrxHelper __h = new GlobalHelloMessagePrxHelper();
+                GlobalSyncMessagePrxHelper __h = new GlobalSyncMessagePrxHelper();
                 __h.__copyFrom(__obj);
                 __d = __h;
             }
@@ -393,13 +393,13 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
         return __d;
     }
 
-    public static GlobalHelloMessagePrx uncheckedCast(Ice.ObjectPrx __obj, String __facet)
+    public static GlobalSyncMessagePrx uncheckedCast(Ice.ObjectPrx __obj, String __facet)
     {
-        GlobalHelloMessagePrx __d = null;
+        GlobalSyncMessagePrx __d = null;
         if(__obj != null)
         {
             Ice.ObjectPrx __bb = __obj.ice_facet(__facet);
-            GlobalHelloMessagePrxHelper __h = new GlobalHelloMessagePrxHelper();
+            GlobalSyncMessagePrxHelper __h = new GlobalSyncMessagePrxHelper();
             __h.__copyFrom(__bb);
             __d = __h;
         }
@@ -409,7 +409,7 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
     public static final String[] __ids =
     {
         "::Ice::Object",
-        "::internal::GlobalHelloMessage"
+        "::internal::GlobalSyncMessage"
     };
 
     public static String ice_staticId()
@@ -419,25 +419,25 @@ public final class GlobalHelloMessagePrxHelper extends Ice.ObjectPrxHelperBase i
 
     protected Ice._ObjectDelM __createDelegateM()
     {
-        return new _GlobalHelloMessageDelM();
+        return new _GlobalSyncMessageDelM();
     }
 
     protected Ice._ObjectDelD __createDelegateD()
     {
-        return new _GlobalHelloMessageDelD();
+        return new _GlobalSyncMessageDelD();
     }
 
-    public static void __write(IceInternal.BasicStream __os, GlobalHelloMessagePrx v)
+    public static void __write(IceInternal.BasicStream __os, GlobalSyncMessagePrx v)
     {
         __os.writeProxy(v);
     }
 
-    public static GlobalHelloMessagePrx __read(IceInternal.BasicStream __is)
+    public static GlobalSyncMessagePrx __read(IceInternal.BasicStream __is)
     {
         Ice.ObjectPrx proxy = __is.readProxy();
         if(proxy != null)
         {
-            GlobalHelloMessagePrxHelper result = new GlobalHelloMessagePrxHelper();
+            GlobalSyncMessagePrxHelper result = new GlobalSyncMessagePrxHelper();
             result.__copyFrom(proxy);
             return result;
         }

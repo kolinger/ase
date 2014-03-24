@@ -20,7 +20,9 @@
 
 package cz.uhk.fim.ase.communication.impl.internal;
 
-public interface _GlobalHandlerOperations
+public interface _GlobalSyncMessageOperationsNC
 {
-    void lookup(GlobalReplyPrx reply, Ice.Current __current);
+    long getTick();
+
+    String getId();
 }

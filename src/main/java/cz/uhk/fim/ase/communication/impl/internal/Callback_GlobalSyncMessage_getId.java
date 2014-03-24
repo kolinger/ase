@@ -20,8 +20,23 @@
 
 package cz.uhk.fim.ase.communication.impl.internal;
 
-public interface GlobalHelloMessage extends Ice.Object,
-                                            _GlobalHelloMessageOperations, _GlobalHelloMessageOperationsNC
+public abstract class Callback_GlobalSyncMessage_getId extends Ice.TwowayCallback
 {
-    public static final long serialVersionUID = 1871679352L;
+    public abstract void response(String __ret);
+
+    public final void __completed(Ice.AsyncResult __result)
+    {
+        GlobalSyncMessagePrx __proxy = (GlobalSyncMessagePrx)__result.getProxy();
+        String __ret = null;
+        try
+        {
+            __ret = __proxy.end_getId(__result);
+        }
+        catch(Ice.LocalException __ex)
+        {
+            exception(__ex);
+            return;
+        }
+        response(__ret);
+    }
 }

@@ -17,8 +17,8 @@ public class TickManager extends LoggedObject {
     public static TickManager get() {
         if (instance == null) {
             instance = new TickManager();
-            instance.setFinalTick(Config.get().container.finalTick);
-            instance.setReportTick(Config.get().container.reportEveryTick);
+            instance.setFinalTick(Config.get().environment.finalTick);
+            instance.setReportTick(Config.get().environment.reportEveryTick);
         }
         return instance;
     }
@@ -48,11 +48,9 @@ public class TickManager extends LoggedObject {
     }
 
     public void setReadyState(boolean ready) {
-        tick++;
+        if (!ready) {
+            tick++;
+        }
         readyForNextTick = ready;
-    }
-
-    public void setReadyState() {
-        setReadyState(true);
     }
 }

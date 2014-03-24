@@ -2,6 +2,8 @@ package cz.uhk.fim.ase.container;
 
 import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.communication.GlobalListener;
+import cz.uhk.fim.ase.communication.GlobalSender;
+import cz.uhk.fim.ase.communication.MessagesListener;
 import cz.uhk.fim.ase.communication.MessagesQueue;
 import cz.uhk.fim.ase.communication.MessagesSender;
 import cz.uhk.fim.ase.communication.impl.GlobalListenerImpl;
@@ -32,6 +34,7 @@ abstract public class Container extends LoggedObject {
     // services
     private MessagesSender sender = new MessagesSenderImpl();
     private MessagesQueue queue = new MessagesQueueImpl();
+    private GlobalSender globalSender = new GlobalSenderImpl();
     private ReportManager reportManager;
 
     // agents
@@ -39,7 +42,7 @@ abstract public class Container extends LoggedObject {
     private ExecutorService executor;
 
     // listeners
-    private MessagesListenerImpl listener;
+    private MessagesListener listener;
     private GlobalListener discoverListener;
 
     private String address;
@@ -47,6 +50,8 @@ abstract public class Container extends LoggedObject {
     public Container(String host, Integer port) {
         address = host + ":" + port;
         reportManager = new ReportManager(this);
+        globalSender.setAddress(Config.get().system.globalSenderAddress + ":" + Config.get().system.globalSenderPort);
+        Config.get().system.id = UUID.randomUUID().toString();
         resolveInstance();
         createThreadPool();
     }
@@ -95,7 +100,7 @@ abstract public class Container extends LoggedObject {
         Thread discoverListenerThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                registerDiscoverListener();
+                registerGlobalListener();
             }
         });
         discoverListenerThread.start();
@@ -116,7 +121,7 @@ abstract public class Container extends LoggedObject {
      * Create a thread pool used for agents tasks only
      */
     private void createThreadPool() {
-        Integer poolSize = Config.get().concurrency.threadsPool;
+        Integer poolSize = Config.get().system.threadsPool;
         getLogger().debug("Creating threads pool with size {} on container {}", poolSize, getAddress());
         executor = Executors.newFixedThreadPool(poolSize);
     }
@@ -140,29 +145,31 @@ abstract public class Container extends LoggedObject {
 
     private String discoverAnotherContainers() {
         getLogger().info("Discovering containers on {}", "239.255.1.1:10000");
-        GlobalSenderImpl client = new GlobalSenderImpl();
-        return client.process(Config.get().container.discoverAddress, Config.get().container.discoverPort);
+        return globalSender.sendHello();
     }
 
     private void registerListener() {
-        getLogger().info("Creating listener on container {}", getAddress());
+        getLogger().info("Binding listener on container {}", getAddress());
         listener = new MessagesListenerImpl();
         listener.setQueue(queue);
         listener.listen(getAddress());
     }
 
-    private void registerDiscoverListener() {
-        getLogger().info("Creating discover listener on {}", "239.255.1.1:10000");
+    private void registerGlobalListener() {
+        String address = Config.get().system.globalSenderAddress + ":" + Config.get().system.globalSenderPort;
+        getLogger().info("Binding global listener on {}", address);
         discoverListener = new GlobalListenerImpl();
         discoverListener.setContainer(this);
-        discoverListener.listen(Config.get().container.discoverAddress + ":" + Config.get().container.discoverPort);
+        discoverListener.listen(address);
     }
 
     /**
      * Runs agents tasks
      */
     private Boolean nextTick() {
-        getLogger().debug("Executing tick #" + TickManager.get().getCurrentTick());
+        TickManager.get().setReadyState(false);
+
+        getLogger().info("Executing tick #" + TickManager.get().getCurrentTick());
 
         // collect tasks
         Set<Callable<Object>> todoList = new HashSet<Callable<Object>>();
@@ -201,7 +208,18 @@ abstract public class Container extends LoggedObject {
         }
 
         // wait for other containers then continue to next tick
-        TickManager.get().setReadyState(); // TODO wait for other containers
+        TickManager.get().setReadyState(true);
+        while (true) {
+            Long tick = globalSender.sendSync();
+            if (tick == null || TickManager.get().getCurrentTick() <= tick) {
+                try {
+                    Thread.sleep(100L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
         return true;
     }
 

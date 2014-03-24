@@ -14,7 +14,7 @@ public class App {
 
     public static void main(String[] args) {
         initialization();
-        run(Config.get().container.address, Config.get().container.port);
+        run(Config.get().system.directSenderAddress, Config.get().system.directSenderPort);
     }
 
     private static void run(String host, Integer port) {

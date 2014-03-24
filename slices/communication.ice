@@ -19,6 +19,11 @@ module internal {
         AgentsList getAgents();
     };
 
+    interface GlobalSyncMessage {
+        long getTick();
+        string getId();
+    };
+
     interface MessagesHandler {
         void handle(MessageEntity message);
     };

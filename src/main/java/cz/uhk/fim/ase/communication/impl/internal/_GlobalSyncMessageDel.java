@@ -20,18 +20,11 @@
 
 package cz.uhk.fim.ase.communication.impl.internal;
 
-public final class MessagesHandlerPrxHolder
+public interface _GlobalSyncMessageDel extends Ice._ObjectDel
 {
-    public
-    MessagesHandlerPrxHolder()
-    {
-    }
+    long getTick(java.util.Map<String, String> __ctx, Ice.Instrumentation.InvocationObserver __obsv)
+        throws IceInternal.LocalExceptionWrapper;
 
-    public
-    MessagesHandlerPrxHolder(MessagesHandlerPrx value)
-    {
-        this.value = value;
-    }
-
-    public MessagesHandlerPrx value;
+    String getId(java.util.Map<String, String> __ctx, Ice.Instrumentation.InvocationObserver __obsv)
+        throws IceInternal.LocalExceptionWrapper;
 }

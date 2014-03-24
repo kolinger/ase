@@ -13,6 +13,9 @@ import cz.uhk.fim.ase.communication.impl.internal.GlobalHelloMessagePrx;
 import cz.uhk.fim.ase.communication.impl.internal.GlobalHelloMessagePrxHelper;
 import cz.uhk.fim.ase.communication.impl.internal.GlobalReplyPrx;
 import cz.uhk.fim.ase.communication.impl.internal.GlobalReplyPrxHelper;
+import cz.uhk.fim.ase.communication.impl.internal.GlobalSyncMessagePrx;
+import cz.uhk.fim.ase.communication.impl.internal.GlobalSyncMessagePrxHelper;
+import cz.uhk.fim.ase.configuration.Config;
 import cz.uhk.fim.ase.container.Registry;
 import cz.uhk.fim.ase.model.impl.AgentEntityImpl;
 
@@ -40,23 +43,25 @@ public class GlobalSenderImpl extends LoggedObject implements GlobalSender {
         GlobalReplyPrx replyProxy = GlobalReplyPrxHelper.uncheckedCast(adapter.addWithUUID(reply));
         adapter.activate();
 
-
-        ObjectPrx proxy = communicator.stringToProxy("discover:udp -h " + host + " -p " + port);
+        ObjectPrx proxy = communicator.stringToProxy("hello:udp -h " + host + " -p " + port);
         GlobalHandlerPrx discover = GlobalHandlerPrxHelper.uncheckedCast(proxy.ice_datagram());
         discover.lookup(replyProxy);
-        Ice.ObjectPrx base = reply.waitReply(2000); // TODO: add timeout to config
+        Ice.ObjectPrx object = reply.waitReply(2000); // TODO: add timeout to config
+
+        getLogger().error("WTF: " + object);
 
         // no replies
-        if (base == null) {
+        if (object == null) {
             return null;
         }
 
-        GlobalHelloMessagePrx hello = GlobalHelloMessagePrxHelper.checkedCast(base);
+        GlobalHelloMessagePrx hello = GlobalHelloMessagePrxHelper.checkedCast(object);
         if (hello == null) { // invalid reply
             return null;
         }
 
-        getLogger().info("Discovered instance ID {} and {} foreign agent(s)", hello.getInstanceId(), hello.getAgents().length);
+        getLogger().info("Discovered instance ID {} and {} foreign agent(s)", hello.getInstanceId(),
+                hello.getAgents().length);
 
         for (cz.uhk.fim.ase.model.internal.AgentEntity agentEntity : hello.getAgents()) {
             Registry.get().register(new AgentEntityImpl(agentEntity));
@@ -65,7 +70,36 @@ public class GlobalSenderImpl extends LoggedObject implements GlobalSender {
         return hello.getInstanceId();
     }
 
-    private
+    public Long sendSync() {
+        Communicator communicator = createCommunicator();
+
+        ObjectAdapter adapter = communicator.createObjectAdapterWithEndpoints("GlobalReply", "tcp");
+        GlobalReply reply = new GlobalReply();
+        GlobalReplyPrx replyProxy = GlobalReplyPrxHelper.uncheckedCast(adapter.addWithUUID(reply));
+        adapter.activate();
+
+        ObjectPrx proxy = communicator.stringToProxy("sync:udp -h " + host + " -p " + port);
+        GlobalHandlerPrx discover = GlobalHandlerPrxHelper.uncheckedCast(proxy.ice_datagram());
+        discover.lookup(replyProxy);
+        Ice.ObjectPrx object = reply.waitReply(2000); // TODO: add timeout to config
+
+        // no replies
+        if (object == null) {
+            return null;
+        }
+
+        // sync message
+        GlobalSyncMessagePrx sync = GlobalSyncMessagePrxHelper.checkedCast(object);
+        if (sync == null) { // invalid reply
+            return null;
+        }
+
+        if (sync.getId().equals(Config.get().system.id)) { // ignore myself
+            return 0L;
+        }
+
+        return sync.getTick();
+    }
 
     private Communicator createCommunicator() {
         InitializationData initializationData = new InitializationData();
