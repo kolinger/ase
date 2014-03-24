@@ -1,18 +1,25 @@
 <?xml version="1.0"?>
 <c:configuration xmlns:c="http://fim.uhk.cz/ase/configuration.xsd">
-    <concurrency>
+    <environment>
+        <agentsCount>100</agentsCount>
+
+        <finalTick>100000</finalTick>
+        <reportEveryTick>100000</reportEveryTick>
+    </environment>
+
+    <system>
         <threadsPool>100</threadsPool>
-    </concurrency>
+
+        <directSenderAddress>localhost</directSenderAddress>
+        <directSenderPort>10000</directSenderPort>
+
+        <globalSenderAddress>239.255.1.1</globalSenderAddress>
+        <globalSenderPort>10001</globalSenderPort>
+    </system>
 
     <reportDatabase>
         <jdbc>jdbc:postgresql://localhost:5432/ase</jdbc>
         <user>ase</user>
         <password>ase</password>
     </reportDatabase>
-
-    <container>
-        <finalTick>100000</finalTick>
-        <reportEveryTick>100000</reportEveryTick>
-        <agentsCount>100</agentsCount>
-    </container>
 </c:configuration>

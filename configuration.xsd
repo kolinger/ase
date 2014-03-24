@@ -3,18 +3,6 @@
 
   <xs:element name="configuration" type="tns:configuration"/>
 
-  <xs:complexType name="container">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="finalTick" type="xs:long"/>
-      <xs:element minOccurs="0" name="reportEveryTick" type="xs:long"/>
-      <xs:element minOccurs="0" name="agentsCount" type="xs:int"/>
-      <xs:element minOccurs="0" name="address" type="xs:string"/>
-      <xs:element minOccurs="0" name="port" type="xs:int"/>
-      <xs:element minOccurs="0" name="discoverAddress" type="xs:string"/>
-      <xs:element minOccurs="0" name="discoverPort" type="xs:int"/>
-    </xs:sequence>
-  </xs:complexType>
-
   <xs:complexType name="reportDatabase">
     <xs:sequence>
       <xs:element minOccurs="0" name="jdbc" type="xs:string"/>
@@ -23,18 +11,30 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="concurrency">
+  <xs:complexType name="environment">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="agentsCount" type="xs:int"/>
+      <xs:element minOccurs="0" name="finalTick" type="xs:long"/>
+      <xs:element minOccurs="0" name="reportEveryTick" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="system">
     <xs:sequence>
       <xs:element minOccurs="0" name="threadsPool" type="xs:int"/>
+      <xs:element minOccurs="0" name="directSenderAddress" type="xs:string"/>
+      <xs:element minOccurs="0" name="directSenderPort" type="xs:int"/>
+      <xs:element minOccurs="0" name="globalSenderAddress" type="xs:string"/>
+      <xs:element minOccurs="0" name="globalSenderPort" type="xs:int"/>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="configuration">
     <xs:sequence>
-      <xs:element minOccurs="0" name="concurrency" type="tns:concurrency"/>
-      <xs:element minOccurs="0" name="reportDatabase" type="tns:reportDatabase"/>
       <xs:element minOccurs="0" name="instance" type="xs:string"/>
-      <xs:element minOccurs="0" name="container" type="tns:container"/>
+      <xs:element minOccurs="0" name="environment" type="tns:environment"/>
+      <xs:element minOccurs="0" name="system" type="tns:system"/>
+      <xs:element minOccurs="0" name="reportDatabase" type="tns:reportDatabase"/>
     </xs:sequence>
   </xs:complexType>
 </xs:schema>

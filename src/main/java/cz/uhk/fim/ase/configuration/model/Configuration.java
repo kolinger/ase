@@ -10,11 +10,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(namespace = "http://fim.uhk.cz/ase/configuration.xsd")
 public class Configuration {
 
-    public Concurrency concurrency = new Concurrency();
-
-    public ReportDatabase reportDatabase = new ReportDatabase();
-
     public String instance;
 
-    public Container container = new Container();
+    public Environment environment = new Environment();
+    public System system = new System();
+    public ReportDatabase reportDatabase = new ReportDatabase();
 }
