@@ -13,6 +13,10 @@ import cz.uhk.fim.ase.communication.impl.MessagesQueueImpl;
 import cz.uhk.fim.ase.communication.impl.MessagesSenderImpl;
 import cz.uhk.fim.ase.configuration.Config;
 import cz.uhk.fim.ase.container.agents.Agent;
+import cz.uhk.fim.ase.model.HelloMessage;
+import cz.uhk.fim.ase.model.SyncMessage;
+import cz.uhk.fim.ase.model.impl.HelloMessageImpl;
+import cz.uhk.fim.ase.model.impl.SyncMessageImpl;
 import cz.uhk.fim.ase.reporting.ReportManager;
 
 import java.util.HashSet;
@@ -50,9 +54,7 @@ abstract public class Container extends LoggedObject {
     public Container(String host, Integer port) {
         address = host + ":" + port;
         reportManager = new ReportManager(this);
-        globalSender.setAddress(Config.get().system.globalSenderAddress + ":" + Config.get().system.globalSenderPort);
         Config.get().system.id = UUID.randomUUID().toString();
-        resolveInstance();
         createThreadPool();
     }
 
@@ -101,6 +103,9 @@ abstract public class Container extends LoggedObject {
             @Override
             public void run() {
                 registerGlobalListener();
+                discoverListener.setMessagesSender(sender);
+                discoverListener.setNode(getAddress());
+                discoverAnotherContainers();
             }
         });
         discoverListenerThread.start();
@@ -126,26 +131,13 @@ abstract public class Container extends LoggedObject {
         executor = Executors.newFixedThreadPool(poolSize);
     }
 
-    /**
-     * Create discover request and resolve instance ID - use external instance ID if exists otherwise create new ID
-     * Only one ID exists at time
-     */
-    private void resolveInstance() {
-        String instance = discoverAnotherContainers();
-        if (instance != null) {
-            getLogger().warn("Using discovered instance ID {} (overriding configuration)", instance);
-            Config.get().instance = instance;
-        } else {
-            if (Config.get().instance == null) {
-                Config.get().instance = UUID.randomUUID().toString();
-            }
-        }
-        getLogger().info("Creating new instance ID {}", Config.get().instance);
-    }
-
-    private String discoverAnotherContainers() {
-        getLogger().info("Discovering containers on {}", "239.255.1.1:10000");
-        return globalSender.sendHello();
+    private void discoverAnotherContainers() {
+        HelloMessage message = new HelloMessageImpl();
+        message.setAgents(Registry.get().getAgents());
+        message.setNode(getAddress());
+        message.setTick(TickManager.get().getCurrentTick());
+        String address = Config.get().system.globalSenderAddress + ":" + Config.get().system.globalSenderPort;
+        globalSender.sendHello(message, address);
     }
 
     private void registerListener() {
@@ -159,7 +151,6 @@ abstract public class Container extends LoggedObject {
         String address = Config.get().system.globalSenderAddress + ":" + Config.get().system.globalSenderPort;
         getLogger().info("Binding global listener on {}", address);
         discoverListener = new GlobalListenerImpl();
-        discoverListener.setContainer(this);
         discoverListener.listen(address);
     }
 
@@ -208,16 +199,16 @@ abstract public class Container extends LoggedObject {
         }
 
         // wait for other containers then continue to next tick
-        TickManager.get().setReadyState(true);
-        while (true) {
-            Long tick = globalSender.sendSync();
-            if (tick == null || TickManager.get().getCurrentTick() <= tick) {
-                try {
-                    Thread.sleep(100L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                break;
+        SyncMessage message = new SyncMessageImpl();
+        message.setTick(TickManager.get().getCurrentTick());
+        message.setNode(getAddress());
+        globalSender.sendSync(message, Config.get().system.globalSenderAddress + ":" + Config.get().system.globalSenderPort);
+
+        while (!TickManager.get().isReadyForNextTick()) {
+            try {
+                Thread.sleep(100L);
+            } catch (InterruptedException e) {
+                // skip
             }
         }
         return true;

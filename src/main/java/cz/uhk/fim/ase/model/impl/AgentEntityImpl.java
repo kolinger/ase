@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Just wrapper for generated entity from slice, because we need remove dependencies on Ice.
- *
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
 public class AgentEntityImpl extends LoggedObject implements AgentEntity {
@@ -24,24 +22,6 @@ public class AgentEntityImpl extends LoggedObject implements AgentEntity {
         entity.setId(UUID.randomUUID().toString());
         entity.getProperties().put("type", type);
         return entity;
-    }
-
-    public static cz.uhk.fim.ase.model.internal.AgentEntity convert(AgentEntity agent) {
-        cz.uhk.fim.ase.model.internal.AgentEntity converted = new cz.uhk.fim.ase.model.internal.AgentEntity();
-        converted.container = agent.getContainer();
-        converted.id = agent.getId();
-        converted.properties = agent.getProperties();
-        return converted;
-    }
-
-    public AgentEntityImpl() {
-        // blank
-    }
-
-    public AgentEntityImpl(cz.uhk.fim.ase.model.internal.AgentEntity agent) {
-        container = agent.container;
-        id = agent.id;
-        properties = agent.properties;
     }
 
     public String getContainer() {

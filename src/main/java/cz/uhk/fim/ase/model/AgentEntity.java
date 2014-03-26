@@ -1,11 +1,12 @@
 package cz.uhk.fim.ase.model;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-public interface AgentEntity {
+public interface AgentEntity extends Serializable {
 
     String getContainer();
     void setContainer(String address);

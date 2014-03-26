@@ -12,7 +12,6 @@ public class TickManager extends LoggedObject {
     private Long tick = 1L;
     private Long finalTick;
     private Long reportTick;
-    private boolean readyForNextTick = false;
 
     public static TickManager get() {
         if (instance == null) {
@@ -44,13 +43,19 @@ public class TickManager extends LoggedObject {
     }
 
     public boolean isReadyForNextTick() {
-        return readyForNextTick;
+        Boolean done = true;
+        for (Long tick : Registry.get().getNodes().values()) {
+            if (tick.compareTo(getCurrentTick()) < 0) {
+                done = false;
+                break;
+            }
+        }
+        return done;
     }
 
     public void setReadyState(boolean ready) {
         if (!ready) {
             tick++;
         }
-        readyForNextTick = ready;
     }
 }

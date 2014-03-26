@@ -1,14 +1,13 @@
 package cz.uhk.fim.ase.communication.impl;
 
-import Ice.Communicator;
-import Ice.InitializationData;
-import Ice.ObjectAdapter;
-import Ice.Util;
 import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.communication.MessagesListener;
 import cz.uhk.fim.ase.communication.MessagesQueue;
-
-import java.net.URL;
+import cz.uhk.fim.ase.container.Registry;
+import cz.uhk.fim.ase.model.AgentEntity;
+import cz.uhk.fim.ase.model.MessageEntity;
+import cz.uhk.fim.ase.model.WelcomeMessage;
+import org.zeromq.ZMQ;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
@@ -22,24 +21,30 @@ public class MessagesListenerImpl extends LoggedObject implements MessagesListen
     }
 
     public void listen(String address) {
-        Communicator communicator = createCommunicator();
+        ZMQ.Socket listener = ContextHolder.getContext().socket(ZMQ.PULL);
+        listener.bind("tcp://" + address);
+        getLogger().info("Message listener listen on " + address);
 
-        String[] parts = address.split(":");
-        String endpoint = "tcp -h " + parts[0] + " -p " + parts[1];
-        ObjectAdapter adapter = communicator.createObjectAdapterWithEndpoints("Handler", endpoint);
-        adapter.add(new MessagesHandler(queue), communicator.stringToIdentity("handler"));
-        adapter.activate();
+        while (!Thread.currentThread().isInterrupted()) {
+            byte[] bytes = listener.recv();
+            byte type = bytes[0]; // first byte is message type
 
-        communicator.waitForShutdown();
-    }
-
-    private Communicator createCommunicator() {
-        InitializationData initializationData = new InitializationData();
-        initializationData.properties = Ice.Util.createProperties();
-        URL file = this.getClass().getClassLoader().getResource("/config.server");
-        if (file != null) {
-            initializationData.properties.load(file.getFile());
+            if (type == 0) { // direct
+                MessageEntity message = (MessageEntity) MessageConverter.convertBytesToObject(bytes);
+                if (message != null) {
+                    queue.addMessage(message);
+                }
+            } else if (type == 2) { // welcome
+                WelcomeMessage welcomeMessage = (WelcomeMessage) MessageConverter.convertBytesToObject(bytes);
+                if (welcomeMessage != null) {
+                    for (AgentEntity agent : welcomeMessage.getAgents()) {
+                        Registry.get().register(agent);
+                    }
+                    Registry.get().updateNode(welcomeMessage.getNode(), welcomeMessage.getTick());
+                }
+            }
         }
-        return Util.initialize(initializationData);
+
+        listener.close();
     }
 }

@@ -3,9 +3,11 @@ package cz.uhk.fim.ase.container;
 import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.model.AgentEntity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Local agents registry.
@@ -14,7 +16,9 @@ import java.util.Random;
  */
 public class Registry extends LoggedObject {
 
-    private List<AgentEntity> agents = new ArrayList<AgentEntity>();
+    private Set<AgentEntity> agents = new HashSet<AgentEntity>();
+
+    private Map<String, Long> nodes = new HashMap<String, Long>();
 
     private static Registry instance;
 
@@ -26,7 +30,21 @@ public class Registry extends LoggedObject {
     }
 
     public void register(AgentEntity agent) {
-        agents.add(agent);
+        if (!agents.contains(agent)) {
+            agents.add(agent);
+        }
+    }
+
+    public void updateNode(String node, Long tick) {
+        nodes.put(node, tick);
+    }
+
+    public Map<String, Long> getNodes() {
+        return nodes;
+    }
+
+    public Set<AgentEntity> getAgents() {
+        return agents;
     }
 
     public AgentEntity getRandomAgent1() {
@@ -35,11 +53,15 @@ public class Registry extends LoggedObject {
             return null;
         }
 
-        while (true) {
-            int index = new Random().nextInt(size);
-            if (agents.get(index).getProperties().get("type").equals("1")) {
-                return agents.get(index);
+        AgentEntity value = null;
+        Integer item = new Random().nextInt(size);
+        Integer i = 0;
+        for (AgentEntity agent : agents) {
+            if (i.equals(item)) {
+                value = agent;
             }
+            i++;
         }
+        return value;
     }
 }

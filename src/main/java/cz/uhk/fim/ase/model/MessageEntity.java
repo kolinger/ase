@@ -1,11 +1,12 @@
 package cz.uhk.fim.ase.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-public interface MessageEntity {
+public interface MessageEntity extends Serializable {
 
     AgentEntity getSender();
     void setSender(AgentEntity sender);

@@ -1,60 +1,66 @@
 package cz.uhk.fim.ase.communication.impl;
 
-import Ice.Communicator;
-import Ice.InitializationData;
-import Ice.ObjectAdapter;
-import Ice.Util;
 import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.communication.GlobalListener;
-import cz.uhk.fim.ase.container.Container;
-
-import java.net.URL;
+import cz.uhk.fim.ase.communication.GlobalSender;
+import cz.uhk.fim.ase.communication.MessagesSender;
+import cz.uhk.fim.ase.container.Registry;
+import cz.uhk.fim.ase.container.TickManager;
+import cz.uhk.fim.ase.model.AgentEntity;
+import cz.uhk.fim.ase.model.HelloMessage;
+import cz.uhk.fim.ase.model.SyncMessage;
+import cz.uhk.fim.ase.model.WelcomeMessage;
+import cz.uhk.fim.ase.model.impl.WelcomeMessageImpl;
+import org.zeromq.ZMQ;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
 public class GlobalListenerImpl extends LoggedObject implements GlobalListener {
 
-    private Container container;
+    private MessagesSender messagesSender;
+    private String node;
 
-    public void setContainer(Container container) {
-        this.container = container;
+    public void setMessagesSender(MessagesSender messagesSender) {
+        this.messagesSender = messagesSender;
+    }
+
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public void listen(String address) {
-        Communicator communicator = createCommunicator();
+        ZMQ.Socket subscriber = ContextHolder.getContext().socket(ZMQ.SUB);
+        subscriber.connect("tcp://" + address);
+        subscriber.subscribe("".getBytes()); // subscribe to all
+        getLogger().info("Global listener subscribed to " + address);
 
-        // main adapter
-        String[] parts = address.split(":");
-        ObjectAdapter discoverAdapter = communicator.createObjectAdapterWithEndpoints("Global",
-                "udp -h " + parts[0] + " -p " + parts[1]);
+        while (!Thread.currentThread().isInterrupted()) {
+            byte[] bytes = subscriber.recv();
+            byte type = bytes[0]; // first byte is message type
 
-        // hello adapter
-        ObjectAdapter helloAdapter = communicator.createObjectAdapterWithEndpoints("HelloResponse", "tcp");
-        Ice.ObjectPrx helloResponse = helloAdapter.addWithUUID(new GlobalHelloMessage(container));
-        helloAdapter.activate();
-        discoverAdapter.add(new GlobalHandler(helloResponse), communicator.stringToIdentity("hello"));
+            if (type == 1) { // hello
+                HelloMessage message = (HelloMessage) MessageConverter.convertBytesToObject(bytes);
+                if (message != null && !message.getNode().equals(node)) {
+                    for (AgentEntity agent : message.getAgents()) {
+                        Registry.get().register(agent);
+                    }
+                    Registry.get().updateNode(message.getNode(), message.getTick());
 
-        // sync adapter
-        ObjectAdapter syncAdapter = communicator.createObjectAdapterWithEndpoints("SyncResponse", "tcp");
-        Ice.ObjectPrx syncResponse = syncAdapter.addWithUUID(new GlobalSyncMessage());
-        syncAdapter.activate();
-        discoverAdapter.add(new GlobalHandler(syncResponse), communicator.stringToIdentity("sync"));
-
-        // run
-        discoverAdapter.activate();
-
-        communicator.waitForShutdown();
-        communicator.destroy();
-    }
-
-    private Communicator createCommunicator() {
-        InitializationData initializationData = new InitializationData();
-        initializationData.properties = Ice.Util.createProperties();
-        URL file = this.getClass().getClassLoader().getResource("/config.server");
-        if (file != null) {
-            initializationData.properties.load(file.getFile());
+                    WelcomeMessage response = new WelcomeMessageImpl();
+                    response.setAgents(Registry.get().getAgents());
+                    response.setNode(node);
+                    response.setTick(TickManager.get().getCurrentTick());
+                    messagesSender.sendWelcome(response, message.getNode());
+                }
+            } else if (type == 3) { // sync
+                SyncMessage message = (SyncMessage) MessageConverter.convertBytesToObject(bytes);
+                if (message != null && !message.getNode().equals(node)) {
+                    Registry.get().updateNode(message.getNode(), message.getTick());
+                }
+            }
         }
-        return Util.initialize(initializationData);
+
+        subscriber.close();
     }
 }
