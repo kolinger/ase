@@ -11,7 +11,7 @@ Requirements
 
 Download
 --------
-`git clone https://github.com/kolinger/ase-proxy.git`
+`git clone https://github.com/kolinger/ase-node.git`
 
 Build
 -----
