@@ -47,4 +47,9 @@ public class AgentEntityImpl implements AgentEntity {
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
+
+    @Override
+    public String toString() {
+        return node + '/' + id;
+    }
 }
