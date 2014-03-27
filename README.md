@@ -9,6 +9,10 @@ Requirements
 - maven
 - git
 
+Download
+--------
+`git clone https://github.com/kolinger/ase-proxy.git`
+
 Build
 -----
 `bin/build.bat` or `bin/build.sh`
