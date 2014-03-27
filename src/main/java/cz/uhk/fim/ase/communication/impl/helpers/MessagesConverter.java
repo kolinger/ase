@@ -1,5 +1,6 @@
-package cz.uhk.fim.ase.communication.impl;
+package cz.uhk.fim.ase.communication.impl.helpers;
 
+import cz.uhk.fim.ase.model.ByeMessage;
 import cz.uhk.fim.ase.model.HelloMessage;
 import cz.uhk.fim.ase.model.SyncMessage;
 import cz.uhk.fim.ase.model.WelcomeMessage;
@@ -13,9 +14,12 @@ import java.io.ObjectOutputStream;
 import java.util.Arrays;
 
 /**
+ * MessagesConverter is internal helper for ZeroMQ communication layer - converting bytes to objects and objects to
+ * bytes with serialisation.
+ *
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-public class MessageConverter {
+public class MessagesConverter {
 
     public static Object convertBytesToObject(byte[] bytes) {
         bytes = Arrays.copyOfRange(bytes, 1, bytes.length); // remove first byte
@@ -25,10 +29,10 @@ public class MessageConverter {
             ObjectInputStream ois = new ObjectInputStream(bis);
             return ois.readObject();
         } catch (IOException e) {
-            LoggerFactory.getLogger(MessageConverter.class).warn("Message converting failed", e);
+            LoggerFactory.getLogger(MessagesConverter.class).warn("Message converting failed", e);
             return null;
         } catch (ClassNotFoundException e) {
-            LoggerFactory.getLogger(MessageConverter.class).warn("Message converting failed", e);
+            LoggerFactory.getLogger(MessagesConverter.class).warn("Message converting failed", e);
             return null;
         }
     }
@@ -51,11 +55,13 @@ public class MessageConverter {
                 bytes[0] = 2;
             } else if (object instanceof SyncMessage) {
                 bytes[0] = 3;
+            } else if (object instanceof ByeMessage) {
+                bytes[0] = 4;
             }
 
             return bytes;
         } catch (IOException e) {
-            LoggerFactory.getLogger(MessageConverter.class).warn("Message converting failed", e);
+            LoggerFactory.getLogger(MessagesConverter.class).warn("Message converting failed", e);
             return null;
         }
     }

@@ -1,6 +1,5 @@
 package cz.uhk.fim.ase.communication.impl;
 
-import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.communication.MessagesQueue;
 import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
@@ -10,13 +9,10 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-
 /**
- * Simple queue for holding messages mapped by agent's ID.
- *
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-public class MessagesQueueImpl extends LoggedObject implements MessagesQueue {
+public class MessagesQueueImpl implements MessagesQueue {
 
     private Map<String, Queue<MessageEntity>> queue = new HashMap<String, Queue<MessageEntity>>();
 
@@ -45,10 +41,12 @@ public class MessagesQueueImpl extends LoggedObject implements MessagesQueue {
     public synchronized MessageEntity searchByType(String agentId, Integer type) {
         if (queue.containsKey(agentId)) {
             Queue<MessageEntity> messages = queue.get(agentId);
-            for (MessageEntity message : messages) {
-                if (message.getType() == type) {
-                    messages.remove(message);
-                    return message;
+            if (messages != null) {
+                for (MessageEntity message : messages) {
+                    if (message.getType().equals(type)) {
+                        messages.remove(message);
+                        return message;
+                    }
                 }
             }
         }

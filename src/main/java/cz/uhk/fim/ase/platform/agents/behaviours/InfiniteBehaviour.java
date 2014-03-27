@@ -1,4 +1,4 @@
-package cz.uhk.fim.ase.container.agents.behaviours;
+package cz.uhk.fim.ase.platform.agents.behaviours;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>

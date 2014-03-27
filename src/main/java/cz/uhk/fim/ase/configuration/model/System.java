@@ -8,17 +8,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(namespace = "http://fim.uhk.cz/ase/configuration.xsd")
 public class System {
 
-    // misc
-    public Integer threadsPool = 100;
+    public Integer computeThreads = 100;
+    public Integer communicationThreads = 10;
 
-    // identification
-    public String id;
-
-    // direct sender
-    public String directSenderAddress = "localhost";
-    public Integer directSenderPort = 10000;
-
-    // global sender
-    public String globalSenderAddress = "239.255.1.1";
-    public Integer globalSenderPort = 10001;
+    public String subscriberAddress = "localhost:10000";
+    public String broadcasterAddress = "localhost:20000";
+    public String listenerAddress = "localhost:30000";
 }

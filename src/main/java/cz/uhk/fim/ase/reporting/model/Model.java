@@ -1,6 +1,6 @@
 package cz.uhk.fim.ase.reporting.model;
 
-import cz.uhk.fim.ase.container.agents.Agent;
+import cz.uhk.fim.ase.platform.agents.Agent;
 
 import java.util.Map;
 

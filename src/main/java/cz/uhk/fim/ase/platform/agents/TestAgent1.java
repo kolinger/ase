@@ -1,12 +1,10 @@
-package cz.uhk.fim.ase.container.agents;
+package cz.uhk.fim.ase.platform.agents;
 
-import cz.uhk.fim.ase.communication.MessagesQueue;
-import cz.uhk.fim.ase.communication.MessagesSender;
-import cz.uhk.fim.ase.container.agents.behaviours.InfiniteBehaviour;
 import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
 import cz.uhk.fim.ase.model.MessageType;
 import cz.uhk.fim.ase.model.impl.MessageEntityImpl;
+import cz.uhk.fim.ase.platform.agents.behaviours.InfiniteBehaviour;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +19,8 @@ public class TestAgent1 extends Agent {
     private Integer resources = 10000;
     private Integer money = 100;
 
-    public TestAgent1(AgentEntity entity, MessagesSender sender, MessagesQueue queue) {
-        super(entity, sender, queue);
+    public TestAgent1(AgentEntity entity) {
+        super(entity);
     }
 
     @Override

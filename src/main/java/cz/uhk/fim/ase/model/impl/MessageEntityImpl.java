@@ -1,6 +1,5 @@
 package cz.uhk.fim.ase.model.impl;
 
-import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
 
@@ -10,7 +9,7 @@ import java.util.List;
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-public class MessageEntityImpl extends LoggedObject implements MessageEntity {
+public class MessageEntityImpl implements MessageEntity {
 
     private AgentEntity sender;
     private List<AgentEntity> receivers = new ArrayList<AgentEntity>();

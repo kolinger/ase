@@ -1,13 +1,11 @@
-package cz.uhk.fim.ase.container.agents.behaviours;
-
-import cz.uhk.fim.ase.common.LoggedObject;
+package cz.uhk.fim.ase.platform.agents.behaviours;
 
 import java.util.concurrent.Callable;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-abstract public class Behavior extends LoggedObject implements Callable<Object> {
+abstract public class Behavior implements Callable<Object> {
 
     public Object call() {
         setup();

@@ -1,11 +1,8 @@
-package cz.uhk.fim.ase.container;
+package cz.uhk.fim.ase.platform;
 
-import cz.uhk.fim.ase.common.LoggedObject;
 import cz.uhk.fim.ase.model.AgentEntity;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -14,11 +11,9 @@ import java.util.Set;
  *
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-public class Registry extends LoggedObject {
+public class Registry {
 
     private Set<AgentEntity> agents = new HashSet<AgentEntity>();
-
-    private Map<String, Long> nodes = new HashMap<String, Long>();
 
     private static Registry instance;
 
@@ -33,14 +28,6 @@ public class Registry extends LoggedObject {
         if (!agents.contains(agent)) {
             agents.add(agent);
         }
-    }
-
-    public void updateNode(String node, Long tick) {
-        nodes.put(node, tick);
-    }
-
-    public Map<String, Long> getNodes() {
-        return nodes;
     }
 
     public Set<AgentEntity> getAgents() {
