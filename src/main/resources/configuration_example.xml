@@ -8,13 +8,12 @@
     </environment>
 
     <system>
-        <threadsPool>100</threadsPool>
+        <computeThreads>100</computeThreads>
+        <communicationThreads>10</communicationThreads>
 
-        <directSenderAddress>localhost</directSenderAddress>
-        <directSenderPort>10000</directSenderPort>
-
-        <globalSenderAddress>239.255.1.1</globalSenderAddress>
-        <globalSenderPort>10001</globalSenderPort>
+        <subscriberAddress>127.0.0.1:10000</subscriberAddress>
+        <broadcasterAddress>127.0.0.1:20000</broadcasterAddress>
+        <listenerAddress>127.0.0.1:30000</listenerAddress>
     </system>
 
     <reportDatabase>

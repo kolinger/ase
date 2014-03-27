@@ -21,11 +21,11 @@
 
   <xs:complexType name="system">
     <xs:sequence>
-      <xs:element minOccurs="0" name="threadsPool" type="xs:int"/>
-      <xs:element minOccurs="0" name="directSenderAddress" type="xs:string"/>
-      <xs:element minOccurs="0" name="directSenderPort" type="xs:int"/>
-      <xs:element minOccurs="0" name="globalSenderAddress" type="xs:string"/>
-      <xs:element minOccurs="0" name="globalSenderPort" type="xs:int"/>
+      <xs:element minOccurs="0" name="computeThreads" type="xs:int"/>
+      <xs:element minOccurs="0" name="communicationThreads" type="xs:int"/>
+      <xs:element minOccurs="0" name="subscriberAddress" type="xs:string"/>
+      <xs:element minOccurs="0" name="broadcasterAddress" type="xs:string"/>
+      <xs:element minOccurs="0" name="listenerAddress" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
 
