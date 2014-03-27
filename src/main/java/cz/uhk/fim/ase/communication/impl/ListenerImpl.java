@@ -47,7 +47,6 @@ public class ListenerImpl implements Listener {
         logger.info("Listen on " + address);
 
         ready = true;
-        this.notifyAll();
 
         while (!Thread.currentThread().isInterrupted()) {
             byte[] bytes = listener.recv();

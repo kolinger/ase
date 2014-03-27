@@ -8,8 +8,8 @@ import java.util.Map;
  */
 public interface AgentEntity extends Serializable {
 
-    String getContainer();
-    void setContainer(String address);
+    String getNode();
+    void setNode(String address);
 
     String getId();
     void setId(String id);

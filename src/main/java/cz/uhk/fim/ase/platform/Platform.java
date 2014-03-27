@@ -46,11 +46,7 @@ abstract public class Platform {
 
         // wait for listener initialization
         while (!listener.isReady()) {
-            try {
-                listener.wait();
-            } catch (InterruptedException e) {
-                break;
-            }
+            // wait
         }
 
         // send hello message
@@ -111,6 +107,7 @@ abstract public class Platform {
         }
 
         // wait for other containers then continue to next tick
+        logger.info("Tick is done - now wait for others platforms");
         syncService.waitForOthers();
         return true;
     }

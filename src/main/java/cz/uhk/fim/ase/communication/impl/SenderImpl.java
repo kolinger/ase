@@ -22,7 +22,7 @@ public class SenderImpl implements Sender {
         byte[] bytes = MessagesConverter.convertObjectToBytes(message);
 
         for (AgentEntity receiver : message.getReceivers()) {
-            ZMQ.Socket socket = getSocket(receiver.getContainer());
+            ZMQ.Socket socket = getSocket(receiver.getNode());
             socket.send(bytes);
         }
     }
@@ -35,6 +35,7 @@ public class SenderImpl implements Sender {
     private ZMQ.Socket getSocket(String address) {
         if (!sockets.containsKey(address)) {
             ZMQ.Socket socket = ContextHolder.getContext().socket(ZMQ.PUSH);
+            socket.connect("tcp://" + address);
             sockets.put(address, socket);
         }
         return sockets.get(address);

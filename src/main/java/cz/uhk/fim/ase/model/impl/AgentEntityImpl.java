@@ -12,24 +12,24 @@ import java.util.UUID;
  */
 public class AgentEntityImpl implements AgentEntity {
 
-    private String container;
+    private String node;
     private String id;
     private Map<String, String> properties = new HashMap<String, String>();
 
     public static AgentEntity create(String type) {
         AgentEntity entity = new AgentEntityImpl();
-        entity.setContainer(ServiceLocator.getConfig().system.listenerAddress);
+        entity.setNode(ServiceLocator.getConfig().system.listenerAddress);
         entity.setId(UUID.randomUUID().toString());
         entity.getProperties().put("type", type);
         return entity;
     }
 
-    public String getContainer() {
-        return container;
+    public String getNode() {
+        return node;
     }
 
-    public void setContainer(String container) {
-        this.container = container;
+    public void setNode(String container) {
+        this.node = container;
     }
 
     public String getId() {

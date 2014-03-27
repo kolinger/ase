@@ -50,7 +50,7 @@ public class BroadcasterImpl implements Broadcaster {
     private ZMQ.Socket getSocket() {
         if (socket == null) {
             socket = ContextHolder.getContext().socket(ZMQ.DEALER);
-            socket.connect(ServiceLocator.getConfig().system.broadcasterAddress);
+            socket.connect("tcp://" + ServiceLocator.getConfig().system.broadcasterAddress);
         }
         return socket;
     }

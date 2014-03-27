@@ -29,11 +29,12 @@ public class SyncService {
 
     public void waitForOthers() {
         ServiceLocator.getBroadcaster().sendSync();
-        Boolean done = true;
+        Boolean done;
         do {
-
-            for (Long tick : nodesStatuses.values()) {
-                if (tick.compareTo(tick) < 0) {
+            done = true;
+            for (Long nodeTick : nodesStatuses.values()) {
+                System.out.println(nodeTick);
+                if (nodeTick.compareTo(tick) < 0) {
                     done = false;
                     break;
                 }
