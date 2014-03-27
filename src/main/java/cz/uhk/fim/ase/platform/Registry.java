@@ -2,7 +2,9 @@ package cz.uhk.fim.ase.platform;
 
 import cz.uhk.fim.ase.model.AgentEntity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -11,9 +13,10 @@ import java.util.Set;
  *
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
+
 public class Registry {
 
-    private Set<AgentEntity> agents = new HashSet<AgentEntity>();
+    private List<AgentEntity> agents = new ArrayList<AgentEntity>();
 
     private static Registry instance;
 
@@ -30,7 +33,7 @@ public class Registry {
         }
     }
 
-    public Set<AgentEntity> getAgents() {
+    public List<AgentEntity> getAgents() {
         return agents;
     }
 
@@ -40,15 +43,11 @@ public class Registry {
             return null;
         }
 
-        AgentEntity value = null;
-        Integer item = new Random().nextInt(size);
-        Integer i = 0;
-        for (AgentEntity agent : agents) {
-            if (i.equals(item)) {
-                value = agent;
+        while (true) {
+            int index = new Random().nextInt(size);
+            if (agents.get(index).getProperties().get("type").equals("1")) {
+                return agents.get(index);
             }
-            i++;
         }
-        return value;
     }
 }

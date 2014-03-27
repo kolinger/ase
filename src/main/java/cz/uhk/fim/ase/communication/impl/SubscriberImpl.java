@@ -14,6 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
@@ -63,7 +66,7 @@ public class SubscriberImpl implements Subscriber {
                 ServiceLocator.getSyncService().updateNodeState(message.getNode(), message.getTick());
 
                 WelcomeMessage response = new WelcomeMessageImpl();
-                response.setAgents(Registry.get().getAgents());
+                response.setAgents(new HashSet<AgentEntity>(Registry.get().getAgents()));
                 response.setNode(address);
                 response.setTick(ServiceLocator.getSyncService().getTick());
                 ServiceLocator.getSender().sendWelcome(response, message.getNode());
