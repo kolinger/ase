@@ -26,7 +26,7 @@ public class BroadcasterImpl implements Broadcaster {
         message.setNode(ServiceLocator.getConfig().system.listenerAddress);
 
         ZMQ.Socket socket = getSocket();
-        socket.send(MessagesConverter.convertObjectToBytes(message));
+        socket.send(MessagesConverter.convertObjectToBytes(message), 0);
     }
 
     public void sendHello(Set<AgentEntity> agents) {
@@ -36,7 +36,7 @@ public class BroadcasterImpl implements Broadcaster {
         message.setAgents(agents);
 
         ZMQ.Socket socket = getSocket();
-        socket.send(MessagesConverter.convertObjectToBytes(message));
+        socket.send(MessagesConverter.convertObjectToBytes(message), 0);
     }
 
     public void sendBye() {
@@ -44,7 +44,7 @@ public class BroadcasterImpl implements Broadcaster {
         message.setNode(ServiceLocator.getConfig().system.listenerAddress);
 
         ZMQ.Socket socket = getSocket();
-        socket.send(MessagesConverter.convertObjectToBytes(message));
+        socket.send(MessagesConverter.convertObjectToBytes(message), 0);
     }
 
     private ZMQ.Socket getSocket() {

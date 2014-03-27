@@ -59,7 +59,7 @@ abstract public class Platform {
         // setup and execute agents tasks
         logger.info("Setting up platform");
         setup();
-        while (!nextTick()) {
+        while (nextTick()) {
             // run agents, run!
         }
     }
@@ -107,7 +107,7 @@ abstract public class Platform {
         }
 
         // wait for other containers then continue to next tick
-        logger.info("Tick is done - now wait for others platforms");
+        logger.debug("Tick is done - now wait for others platforms");
         syncService.waitForOthers();
         return true;
     }

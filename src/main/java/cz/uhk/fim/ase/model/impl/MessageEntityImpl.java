@@ -53,4 +53,14 @@ public class MessageEntityImpl implements MessageEntity {
     public void setContent(String content) {
         this.content = content;
     }
+
+    @Override
+    public String toString() {
+        return "MessageEntityImpl{" +
+                "sender=" + sender +
+                ", receivers=" + receivers +
+                ", type=" + type +
+                ", content='" + content + '\'' +
+                '}';
+    }
 }

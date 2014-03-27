@@ -16,15 +16,15 @@ public class PostgreSqlModel implements Model {
     private Connection db;
 
     public PostgreSqlModel() {
-        try {
-            Class.forName("org.postgresql.Driver");
-            db = createConnection();
-            db.setAutoCommit(false);
-        } catch (SQLException e) {
-//            getLogger().error("Can't connect to database", e);
-        } catch (ClassNotFoundException e) {
-//            getLogger().error("Postgresql driver not found", e);
-        }
+//        try {
+//            Class.forName("org.postgresql.Driver");
+//            db = createConnection();
+//            db.setAutoCommit(false);
+//        } catch (SQLException e) {
+////            getLogger().error("Can't connect to database", e);
+//        } catch (ClassNotFoundException e) {
+////            getLogger().error("Postgresql driver not found", e);
+//        }
     }
 
     @Override

@@ -23,16 +23,16 @@ public class SenderImpl implements Sender {
 
         for (AgentEntity receiver : message.getReceivers()) {
             ZMQ.Socket socket = getSocket(receiver.getNode());
-            socket.send(bytes);
+            socket.send(bytes, 0);
         }
     }
 
     public void sendWelcome(WelcomeMessage message, String node) {
         ZMQ.Socket socket = getSocket(node);
-        socket.send(MessagesConverter.convertObjectToBytes(message));
+        socket.send(MessagesConverter.convertObjectToBytes(message), 0);
     }
 
-    private ZMQ.Socket getSocket(String address) {
+    private synchronized ZMQ.Socket getSocket(String address) {
         if (!sockets.containsKey(address)) {
             ZMQ.Socket socket = ContextHolder.getContext().socket(ZMQ.PUSH);
             socket.connect("tcp://" + address);

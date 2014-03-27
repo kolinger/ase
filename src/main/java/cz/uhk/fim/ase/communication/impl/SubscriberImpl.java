@@ -44,7 +44,7 @@ public class SubscriberImpl implements Subscriber {
         logger.info("Subscribed to " + address);
 
         while (!Thread.currentThread().isInterrupted()) {
-            byte[] bytes = subscriber.recv();
+            byte[] bytes = subscriber.recv(0);
             handleBytes(bytes, address);
         }
 

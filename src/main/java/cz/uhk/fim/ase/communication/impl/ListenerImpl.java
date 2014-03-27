@@ -49,7 +49,7 @@ public class ListenerImpl implements Listener {
         ready = true;
 
         while (!Thread.currentThread().isInterrupted()) {
-            byte[] bytes = listener.recv();
+            byte[] bytes = listener.recv(0);
             handleBytes(bytes);
         }
 
@@ -58,6 +58,8 @@ public class ListenerImpl implements Listener {
 
     private void handleBytes(byte[] bytes) {
         byte type = bytes[0]; // first byte is message type
+
+        logger.debug("Handling new message " + type);
 
         if (type == 0) { // direct
             MessageEntity message = (MessageEntity) MessagesConverter.convertBytesToObject(bytes);
