@@ -24,7 +24,9 @@ public class Mongo implements Model {
 
     public Mongo() {
         try {
-            client = new MongoClient("localhost", 27017);
+            client = new MongoClient(ServiceLocator.getConfig().reportDatabase.address,
+                    ServiceLocator.getConfig().reportDatabase.port);
+            
             db = client.getDB("ase");
             collection = db.getCollection("reports");
         } catch (UnknownHostException e) {
