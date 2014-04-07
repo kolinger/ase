@@ -17,8 +17,7 @@
     </system>
 
     <reportDatabase>
-        <jdbc>jdbc:postgresql://localhost:5432/ase</jdbc>
-        <user>ase</user>
-        <password>ase</password>
+        <address>0.0.0.0</address>
+        <port>27017</port>
     </reportDatabase>
 </c:configuration>
