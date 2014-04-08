@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://fim.uhk.cz/ase/configuration.xsd" targetNamespace="http://fim.uhk.cz/ase/configuration.xsd" version="1.0">
+
+  <xs:element name="configuration" type="tns:configuration"/>
+
+  <xs:complexType name="reportDatabase">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="address" type="xs:string"/>
+      <xs:element minOccurs="0" name="port" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="environment">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="agentsCount" type="xs:int"/>
+      <xs:element minOccurs="0" name="finalTick" type="xs:long"/>
+      <xs:element minOccurs="0" name="reportEveryTick" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="system">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="computeThreads" type="xs:int"/>
+      <xs:element minOccurs="0" name="communicationThreads" type="xs:int"/>
+      <xs:element minOccurs="0" name="subscriberAddress" type="xs:string"/>
+      <xs:element minOccurs="0" name="broadcasterAddress" type="xs:string"/>
+      <xs:element minOccurs="0" name="listenerAddress" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="configuration">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="instance" type="xs:string"/>
+      <xs:element minOccurs="0" name="environment" type="tns:environment"/>
+      <xs:element minOccurs="0" name="system" type="tns:system"/>
+      <xs:element minOccurs="0" name="reportDatabase" type="tns:reportDatabase"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
