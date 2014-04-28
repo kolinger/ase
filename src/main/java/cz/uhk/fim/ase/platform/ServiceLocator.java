@@ -14,7 +14,6 @@ import cz.uhk.fim.ase.configuration.ConfigurationLoader;
 import cz.uhk.fim.ase.configuration.XmlLoader;
 import cz.uhk.fim.ase.configuration.model.Configuration;
 import cz.uhk.fim.ase.reporting.ReportService;
-import cz.uhk.fim.ase.reporting.model.Model;
 import cz.uhk.fim.ase.reporting.model.Mongo;
 
 /**
@@ -28,7 +27,7 @@ public class ServiceLocator {
     private ConfigurationLoader configurationLoader = new XmlLoader();
     private Configuration configuration = configurationLoader.loadConfiguration();
 
-    private ReportService reportService;
+    private ReportService reportService = new ReportService(new Mongo());
 
     private MessagesQueue messagesQueue = new MessagesQueueImpl();
     private Sender sender = new SenderImpl();

@@ -6,6 +6,7 @@ import cz.uhk.fim.ase.communication.impl.helpers.MessagesConverter;
 import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
 import cz.uhk.fim.ase.model.WelcomeMessage;
+import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class SenderImpl implements Sender {
     private Map<String, ZMQ.Socket> sockets = new HashMap<String, ZMQ.Socket>();
 
     public void send(MessageEntity message) {
+        LoggerFactory.getLogger(SenderImpl.class).debug("Sending message " + message);
         byte[] bytes = MessagesConverter.convertObjectToBytes(message);
 
         for (AgentEntity receiver : message.getReceivers()) {
@@ -32,7 +34,7 @@ public class SenderImpl implements Sender {
         socket.send(MessagesConverter.convertObjectToBytes(message), 0);
     }
 
-    private synchronized ZMQ.Socket getSocket(String address) {
+    private ZMQ.Socket getSocket(String address) {
         if (!sockets.containsKey(address)) {
             ZMQ.Socket socket = ContextHolder.getContext().socket(ZMQ.PUSH);
             socket.connect("tcp://" + address);

@@ -24,17 +24,19 @@ public class Mongo implements Model {
 
     public Mongo() {
         try {
-            client = new MongoClient(ServiceLocator.getConfig().reportDatabase.address, ServiceLocator.getConfig().reportDatabase.port);
+            client = new MongoClient("10.0.5.24", 27017);
             
             db = client.getDB("ase");
             collection = db.getCollection("reports");
         } catch (UnknownHostException e) {
+            e.printStackTrace();
             logger.error("Connection to mongo database failed", e);
         }
     }
 
     @Override
     public void save(Map<String, ? extends Agent> agents) {
+        logger.debug("Report tick...");
         Long tick = ServiceLocator.getSyncService().getTick();
 
         for (Agent agent : agents.values()) {

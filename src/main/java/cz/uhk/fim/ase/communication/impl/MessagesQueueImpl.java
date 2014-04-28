@@ -8,15 +8,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
 public class MessagesQueueImpl implements MessagesQueue {
 
-    private Map<String, Queue<MessageEntity>> queue = new HashMap<String, Queue<MessageEntity>>();
+    private Map<String, Queue<MessageEntity>> queue = new ConcurrentHashMap<>();
 
-    public synchronized void addMessage(MessageEntity message) {
+    public void addMessage(MessageEntity message) {
         for (AgentEntity receiver : message.getReceivers()) {
             Queue<MessageEntity> messages;
             if (queue.containsKey(receiver.getId())) {
@@ -30,7 +31,7 @@ public class MessagesQueueImpl implements MessagesQueue {
         }
     }
 
-    public synchronized MessageEntity search(String agentId) {
+    public MessageEntity search(String agentId) {
         if (queue.containsKey(agentId)) {
             Queue<MessageEntity> messages = queue.get(agentId);
             return messages.poll();
@@ -38,7 +39,7 @@ public class MessagesQueueImpl implements MessagesQueue {
         return null;
     }
 
-    public synchronized MessageEntity searchByType(String agentId, Integer type) {
+    public MessageEntity searchByType(String agentId, Integer type) {
         if (queue.containsKey(agentId)) {
             Queue<MessageEntity> messages = queue.get(agentId);
             if (messages != null) {
