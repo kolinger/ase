@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <c:configuration xmlns:c="http://fim.uhk.cz/ase/configuration.xsd">
     <environment>
-        <agentsCount>100</agentsCount>
+        <agentsCount>10000</agentsCount>
 
         <finalTick>100000</finalTick>
         <reportEveryTick>100000</reportEveryTick>
@@ -17,7 +17,7 @@
     </system>
 
     <reportDatabase>
-        <address>0.0.0.0</address>
+        <address>127.0.0.1</address>
         <port>27017</port>
     </reportDatabase>
 </c:configuration>
