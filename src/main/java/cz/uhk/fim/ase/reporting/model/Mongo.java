@@ -22,20 +22,22 @@ public class Mongo implements Model {
     private DB db;
     private DBCollection collection;
 
-    public Mongo() {
-        try {
-            client = new MongoClient("10.0.5.24", 27017);
-            
-            db = client.getDB("ase");
-            collection = db.getCollection("reports");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            logger.error("Connection to mongo database failed", e);
-        }
-    }
-
     @Override
     public void save(Map<String, ? extends Agent> agents) {
+        if (client == null) {
+            try {
+                client = new MongoClient(ServiceLocator.getConfig().reportDatabase.address,
+                        ServiceLocator.getConfig().reportDatabase.port);
+
+                db = client.getDB("ase");
+                collection = db.getCollection("reports");
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+                logger.error("Connection to mongo database failed", e);
+                return;
+            }
+        }
+
         logger.debug("Report tick...");
         Long tick = ServiceLocator.getSyncService().getTick();
 

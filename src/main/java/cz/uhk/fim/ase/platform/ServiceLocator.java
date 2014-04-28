@@ -27,7 +27,7 @@ public class ServiceLocator {
     private ConfigurationLoader configurationLoader = new XmlLoader();
     private Configuration configuration = configurationLoader.loadConfiguration();
 
-    private ReportService reportService = new ReportService(new Mongo());
+    private ReportService reportService;
 
     private MessagesQueue messagesQueue = new MessagesQueueImpl();
     private Sender sender = new SenderImpl();
