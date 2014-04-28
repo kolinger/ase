@@ -5,11 +5,11 @@
         </encoder>
     </appender>
 
-    <logger name="cz.uhk.fim.ase" level="DEBUG">
+    <logger name="cz.uhk.fim.ase" level="WARN">
         <appender-ref ref="CONSOLE" />
     </logger>
 
-    <rootLogger level="DEBUG">
+    <rootLogger level="WARN">
         <appender-ref ref="CONSOLE" />
     </rootLogger>
 </configuration>
