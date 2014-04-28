@@ -28,6 +28,11 @@ public class SyncService {
     }
 
     public void waitForOthers() {
+        if (nodesStatuses.size() == 0) { // standalone mode
+            tick++;
+            return;
+        }
+
         ServiceLocator.getBroadcaster().sendSync();
         Boolean done;
         do {
