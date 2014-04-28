@@ -37,7 +37,7 @@ public class ListenerImpl implements Listener {
         return ready;
     }
 
-    public ZMQ.Socket getBroker() {
+    public synchronized ZMQ.Socket getBroker() {
         return broker;
     }
 
