@@ -6,11 +6,11 @@ import cz.uhk.fim.ase.communication.impl.helpers.MessagesConverter;
 import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
 import cz.uhk.fim.ase.model.WelcomeMessage;
+import cz.uhk.fim.ase.platform.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,6 +22,8 @@ public class SenderImpl implements Sender {
     private static Logger logger = LoggerFactory.getLogger(SenderImpl.class);
     int maxConnectionPerNode = 10;
     private Map<String, Worker[]> workers = new ConcurrentHashMap<>();
+    private String myself = ServiceLocator.getConfig().system.listenerAddress;
+    private Worker listenerBroker = new LoopBackWorker();
 
     public void send(MessageEntity message) {
         byte[] bytes = MessagesConverter.convertObjectToBytes(message);
@@ -49,6 +51,10 @@ public class SenderImpl implements Sender {
     }
 
     private synchronized Worker getWorker(String address) {
+        if (address.equals(myself)) { // loop-back
+            return listenerBroker;
+        }
+
         Worker[] queue;
 
         if (!workers.containsKey(address)) {
@@ -79,7 +85,7 @@ public class SenderImpl implements Sender {
 
         private boolean ready = true;
         private String address;
-        private ZMQ.Socket socket = ContextHolder.getContext().socket(ZMQ.PUSH);
+        protected ZMQ.Socket socket = ContextHolder.getContext().socket(ZMQ.PUSH);
 
         public Worker(String address) {
             this.address = address;
@@ -96,16 +102,27 @@ public class SenderImpl implements Sender {
                 // connection failed - reconnect
                 socket.close();
                 connect();
-                socket.send(bytes, 0);
                 logger.error("Connection failed - reconnect");
             }
             ready = true;
         }
 
-        private void connect() {
+        protected void connect() {
             socket.connect("tcp://" + address);
             socket.setSendTimeOut(1000);
             socket.setReceiveTimeOut(1000);
+        }
+    }
+
+    public class LoopBackWorker extends Worker {
+
+        public LoopBackWorker() {
+            super(null);
+        }
+
+        @Override
+        protected void connect() {
+            socket = ((ListenerImpl) ServiceLocator.getListener()).getBroker();
         }
     }
 }

@@ -19,6 +19,7 @@ public class ListenerImpl implements Listener {
 
     private Boolean ready = false;
     private ZMQ.Socket listener;
+    private ZMQ.Socket broker;
     private Logger logger = LoggerFactory.getLogger(ListenerImpl.class);
     private Thread thread = new Thread(new Runnable() {
         @Override
@@ -36,6 +37,10 @@ public class ListenerImpl implements Listener {
         return ready;
     }
 
+    public ZMQ.Socket getBroker() {
+        return broker;
+    }
+
     public void listen() {
         thread.start();
     }
@@ -46,7 +51,7 @@ public class ListenerImpl implements Listener {
         bind(address);
         logger.info("Listen on " + address);
 
-        ZMQ.Socket broker = ContextHolder.getContext().socket(ZMQ.PUSH);
+        broker = ContextHolder.getContext().socket(ZMQ.PUSH);
         broker.bind("inproc://workers");
 
         int workersCount = 10;
