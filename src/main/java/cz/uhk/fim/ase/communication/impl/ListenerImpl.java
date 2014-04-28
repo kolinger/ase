@@ -18,6 +18,7 @@ import org.zeromq.ZMQ;
 public class ListenerImpl implements Listener {
 
     private Boolean ready = false;
+    private ZMQ.Socket listener;
     private Logger logger = LoggerFactory.getLogger(ListenerImpl.class);
     private Thread thread = new Thread(new Runnable() {
         @Override
@@ -42,24 +43,44 @@ public class ListenerImpl implements Listener {
     private void bind() {
         String address = ServiceLocator.getConfig().system.listenerAddress;
 
-        ZMQ.Socket listener = ContextHolder.getContext().socket(ZMQ.PULL);
-        listener.bind("tcp://" + address);
+        bind(address);
         logger.info("Listen on " + address);
 
-        ready = true;
+        ZMQ.Socket broker = ContextHolder.getContext().socket(ZMQ.PUSH);
+        broker.bind("inproc://workers");
 
-        while (!Thread.currentThread().isInterrupted()) {
-            byte[] bytes = listener.recv(0);
-            handleBytes(bytes);
+        int workersCount = 10;
+        Thread[] threads = new Thread[workersCount];
+        for (int count = 0; count < workersCount; count++) {
+            threads[count] = new Thread(new Worker());
+            threads[count].start();
         }
 
+        while (!Thread.currentThread().isInterrupted()) {
+            ready = true;
+            byte[] bytes = listener.recv(0);
+            if (bytes == null || bytes.length == 0) { // connection failed? -> rebind
+                listener.close();
+                bind(address);
+                logger.error("Connection failed - rebind");
+                continue;
+            }
+            broker.send(bytes, 0);
+        }
+
+        broker.close();
         listener.close();
+    }
+
+    private void bind(String address) {
+        listener = ContextHolder.getContext().socket(ZMQ.PULL);
+        listener.bind("tcp://" + address);
+        listener.setSendTimeOut(1000);
+        listener.setReceiveTimeOut(1000);
     }
 
     private void handleBytes(byte[] bytes) {
         byte type = bytes[0]; // first byte is message type
-
-        logger.debug("Handling new message " + type);
 
         if (type == 0) { // direct
             MessageEntity message = (MessageEntity) MessagesConverter.convertBytesToObject(bytes);
@@ -73,6 +94,20 @@ public class ListenerImpl implements Listener {
                     Registry.get().register(agent);
                 }
                 ServiceLocator.getSyncService().updateNodeState(welcomeMessage.getNode(), welcomeMessage.getTick());
+            }
+        }
+    }
+
+    public class Worker implements Runnable {
+
+        public void run() {
+            ZMQ.Socket worker = ContextHolder.getContext().socket(ZMQ.PULL);
+            worker.setHWM(2);
+            worker.connect("inproc://workers");
+
+            while (!Thread.currentThread().isInterrupted()) {
+                byte[] bytes = worker.recv(0);
+                handleBytes(bytes);
             }
         }
     }
