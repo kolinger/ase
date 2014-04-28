@@ -30,7 +30,7 @@ public class ServiceLocator {
     private ReportService reportService;
 
     private MessagesQueue messagesQueue = new MessagesQueueImpl();
-    private Sender sender = new SenderImpl();
+    private Sender sender;
     private Listener listener = new ListenerImpl();
     private Subscriber subscriber = new SubscriberImpl();
     private Broadcaster broadcaster = new BroadcasterImpl();
@@ -60,6 +60,9 @@ public class ServiceLocator {
     }
 
     public static Sender getSender() {
+        if (getInstance().sender == null) {
+            getInstance().sender = new SenderImpl();
+        }
         return getInstance().sender;
     }
 
