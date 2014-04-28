@@ -28,8 +28,7 @@ public class ServiceLocator {
     private ConfigurationLoader configurationLoader = new XmlLoader();
     private Configuration configuration = configurationLoader.loadConfiguration();
 
-    private Model model = new Mongo();
-    private ReportService reportService = new ReportService(model);
+    private ReportService reportService;
 
     private MessagesQueue messagesQueue = new MessagesQueueImpl();
     private Sender sender = new SenderImpl();
@@ -51,6 +50,9 @@ public class ServiceLocator {
     }
 
     public static ReportService getReportService() {
+        if (getInstance().reportService == null) {
+            getInstance().reportService = new ReportService(new Mongo());
+        }
         return getInstance().reportService;
     }
 
