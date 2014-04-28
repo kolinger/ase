@@ -59,10 +59,7 @@ public class ListenerImpl implements Listener {
         while (!Thread.currentThread().isInterrupted()) {
             ready = true;
             byte[] bytes = listener.recv(0);
-            if (bytes == null || bytes.length == 0) { // connection failed? -> rebind
-                listener.close();
-                bind(address);
-                logger.error("Connection failed - rebind");
+            if (bytes == null || bytes.length == 0) { // connection failed?
                 continue;
             }
             broker.send(bytes, 0);
