@@ -27,7 +27,7 @@ public class BroadcasterImpl implements Broadcaster {
         logger.debug("Sending sync message");
         SyncMessage message = new SyncMessageImpl();
         message.setTick(ServiceLocator.getSyncService().getTick());
-        message.setNode(ServiceLocator.getConfig().system.listenerAddress);
+        message.setNode(ServiceLocator.getConfig().system.myAddress);
 
         ZMQ.Socket socket = getSocket();
         socket.send(MessagesConverter.convertObjectToBytes(message), 0);
@@ -39,7 +39,7 @@ public class BroadcasterImpl implements Broadcaster {
         logger.debug("Sending hello message");
         HelloMessage message = new HelloMessageImpl();
         message.setTick(ServiceLocator.getSyncService().getTick());
-        message.setNode(ServiceLocator.getConfig().system.listenerAddress);
+        message.setNode(ServiceLocator.getConfig().system.myAddress);
         message.setAgents(agents);
 
         ZMQ.Socket socket = getSocket();
@@ -51,7 +51,7 @@ public class BroadcasterImpl implements Broadcaster {
     public void sendBye() {
         logger.debug("Sending bye message");
         SyncMessage message = new SyncMessageImpl();
-        message.setNode(ServiceLocator.getConfig().system.listenerAddress);
+        message.setNode(ServiceLocator.getConfig().system.myAddress);
 
         ZMQ.Socket socket = getSocket();
         socket.send(MessagesConverter.convertObjectToBytes(message), 0);

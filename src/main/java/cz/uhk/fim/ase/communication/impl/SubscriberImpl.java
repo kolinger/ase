@@ -28,7 +28,7 @@ public class SubscriberImpl implements Subscriber {
             bind();
         }
     }, "subscriber-thread");
-    private String myself = ServiceLocator.getConfig().system.listenerAddress;
+    private String myself = ServiceLocator.getConfig().system.myAddress;
 
     public void shutdown() {
         thread.interrupt();

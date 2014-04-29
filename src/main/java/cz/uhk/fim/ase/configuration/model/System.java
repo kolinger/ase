@@ -11,7 +11,8 @@ public class System {
     public Integer computeThreads = 100;
     public Integer communicationThreads = 10;
 
-    public String subscriberAddress = "localhost:10000";
-    public String broadcasterAddress = "localhost:20000";
-    public String listenerAddress = "localhost:30000";
+    public String subscriberAddress = "127.0.0.1:10000";
+    public String broadcasterAddress = "127.0.0.1:20000";
+    public String listenerAddress = "0.0.0.0:30000";
+    public String myAddress = "127.0.0.1:30000";
 }

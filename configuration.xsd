@@ -25,6 +25,7 @@
       <xs:element minOccurs="0" name="subscriberAddress" type="xs:string"/>
       <xs:element minOccurs="0" name="broadcasterAddress" type="xs:string"/>
       <xs:element minOccurs="0" name="listenerAddress" type="xs:string"/>
+      <xs:element minOccurs="0" name="myAddress" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
 

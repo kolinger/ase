@@ -18,7 +18,7 @@ public class AgentEntityImpl implements AgentEntity {
 
     public static AgentEntity create(String type) {
         AgentEntity entity = new AgentEntityImpl();
-        entity.setNode(ServiceLocator.getConfig().system.listenerAddress);
+        entity.setNode(ServiceLocator.getConfig().system.myAddress);
         entity.setId(UUID.randomUUID().toString());
         entity.getProperties().put("type", type);
         return entity;

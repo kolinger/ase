@@ -13,7 +13,8 @@
 
         <subscriberAddress>127.0.0.1:10000</subscriberAddress>
         <broadcasterAddress>127.0.0.1:20000</broadcasterAddress>
-        <listenerAddress>127.0.0.1:30000</listenerAddress>
+        <listenerAddress>0.0.0.0:30000</listenerAddress>
+        <myAddress>127.0.0.1:30000</myAddress>
     </system>
 
     <reportDatabase>

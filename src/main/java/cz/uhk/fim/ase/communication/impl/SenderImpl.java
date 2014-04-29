@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
 public class SenderImpl implements Sender {
 
     private static Logger logger = LoggerFactory.getLogger(SenderImpl.class);
-    private String myself = ServiceLocator.getConfig().system.listenerAddress;
+    private String myself = ServiceLocator.getConfig().system.myAddress;
     private Deque<Job> queue = new ConcurrentLinkedDeque<>();
 
     int workersCount = 10; // TODO config
