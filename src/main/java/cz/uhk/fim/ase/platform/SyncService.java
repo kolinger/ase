@@ -2,7 +2,6 @@ package cz.uhk.fim.ase.platform;
 
 import cz.uhk.fim.ase.communication.impl.SenderImpl;
 
-import javax.xml.ws.Service;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +45,7 @@ public class SyncService {
         do {
             done = true;
             for (Long nodeTick : nodesStatuses.values()) {
-                if (nodeTick.compareTo(tick) < 0) {
+                if (nodeTick.compareTo(tick) <= 0) {
                     done = false;
                     break;
                 }
