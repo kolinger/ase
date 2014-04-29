@@ -2,8 +2,8 @@ package cz.uhk.fim.ase.platform;
 
 import cz.uhk.fim.ase.communication.impl.SenderImpl;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
@@ -11,7 +11,7 @@ import java.util.Map;
 public class SyncService {
 
     private Long tick = 1L;
-    private Map<String, Long> nodesStatuses = new HashMap<String, Long>();
+    private Map<String, Long> nodesStatuses = new ConcurrentHashMap<>();
     private SenderImpl sender = (SenderImpl) ServiceLocator.getSender();
 
     public Long getTick() {
