@@ -25,8 +25,9 @@ public class BroadcasterImpl implements Broadcaster {
         message.setTick(ServiceLocator.getSyncService().getTick());
         message.setNode(ServiceLocator.getConfig().system.listenerAddress);
 
-        ZMQ.Socket socket = getSocket();
+        ZMQ.Socket socket = createSocket();
         socket.send(MessagesConverter.convertObjectToBytes(message), 0);
+        socket.close();
     }
 
     public void sendHello(Set<AgentEntity> agents) {
@@ -35,23 +36,23 @@ public class BroadcasterImpl implements Broadcaster {
         message.setNode(ServiceLocator.getConfig().system.listenerAddress);
         message.setAgents(agents);
 
-        ZMQ.Socket socket = getSocket();
+        ZMQ.Socket socket = createSocket();
         socket.send(MessagesConverter.convertObjectToBytes(message), 0);
+        socket.close();
     }
 
     public void sendBye() {
         SyncMessage message = new SyncMessageImpl();
         message.setNode(ServiceLocator.getConfig().system.listenerAddress);
 
-        ZMQ.Socket socket = getSocket();
+        ZMQ.Socket socket = createSocket();
         socket.send(MessagesConverter.convertObjectToBytes(message), 0);
+        socket.close();
     }
 
-    private ZMQ.Socket getSocket() {
-        if (socket == null) {
-            socket = ContextHolder.getContext().socket(ZMQ.DEALER);
-            socket.connect("tcp://" + ServiceLocator.getConfig().system.broadcasterAddress);
-        }
+    private ZMQ.Socket createSocket() {
+        ZMQ.Socket socket = ContextHolder.getContext().socket(ZMQ.DEALER);
+        socket.connect("tcp://" + ServiceLocator.getConfig().system.broadcasterAddress);
         return socket;
     }
 }
