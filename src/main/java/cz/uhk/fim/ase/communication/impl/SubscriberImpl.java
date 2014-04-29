@@ -51,13 +51,13 @@ public class SubscriberImpl implements Subscriber {
             if (bytes == null || bytes.length == 0) {
                 continue;
             }
-            handleBytes(bytes, address);
+            handleBytes(bytes);
         }
 
         subscriber.close();
     }
 
-    private void handleBytes(byte[] bytes, String address) {
+    private void handleBytes(byte[] bytes) {
         byte type = bytes[0]; // first byte is message type
 
         if (type == 1) { // hello
@@ -66,19 +66,19 @@ public class SubscriberImpl implements Subscriber {
                 for (AgentEntity agent : message.getAgents()) {
                     Registry.get().register(agent);
                 }
-                logger.debug("Received hello message from " + address);
+                logger.debug("Received hello message from " + message.getNode());
                 ServiceLocator.getSyncService().updateNodeState(message.getNode(), message.getTick());
 
                 WelcomeMessage response = new WelcomeMessageImpl();
                 response.setAgents(new HashSet<AgentEntity>(Registry.get().getAgents()));
-                response.setNode(address);
+                response.setNode(myself);
                 response.setTick(ServiceLocator.getSyncService().getTick());
                 ServiceLocator.getSender().sendWelcome(response, message.getNode());
             }
         } else if (type == 3) { // sync
             SyncMessage message = (SyncMessage) MessagesConverter.convertBytesToObject(bytes);
             if (message != null && !message.getNode().equals(myself)) {
-                logger.debug("Received sync message from " + address);
+                logger.debug("Received sync message from " + message.getNode());
                 ServiceLocator.getSyncService().updateNodeState(message.getNode(), message.getTick());
             }
         }
