@@ -45,6 +45,7 @@ public class SyncService {
         do {
             done = true;
             for (Long nodeTick : nodesStatuses.values()) {
+                System.out.println(nodeTick + " vs. " + tick);
                 if (nodeTick.compareTo(tick) < 0) {
                     done = false;
                     break;
