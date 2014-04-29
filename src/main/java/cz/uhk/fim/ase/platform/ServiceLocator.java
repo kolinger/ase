@@ -29,13 +29,13 @@ public class ServiceLocator {
 
     private ReportService reportService;
 
-    private MessagesQueue messagesQueue = new MessagesQueueImpl();
+    private MessagesQueue messagesQueue;
     private Sender sender;
-    private Listener listener = new ListenerImpl();
-    private Subscriber subscriber = new SubscriberImpl();
-    private Broadcaster broadcaster = new BroadcasterImpl();
+    private Listener listener;
+    private Subscriber subscriber;
+    private Broadcaster broadcaster;
 
-    private SyncService syncService = new SyncService();
+    private SyncService syncService;
 
     // internal
     private static ServiceLocator instance;
@@ -56,6 +56,9 @@ public class ServiceLocator {
     }
 
     public static MessagesQueue getMessagesQueue() {
+        if (getInstance().messagesQueue == null) {
+            getInstance().messagesQueue = new MessagesQueueImpl();
+        }
         return getInstance().messagesQueue;
     }
 
@@ -67,18 +70,30 @@ public class ServiceLocator {
     }
 
     public static Listener getListener() {
+        if (getInstance().listener == null) {
+            getInstance().listener = new ListenerImpl();
+        }
         return getInstance().listener;
     }
 
     public static Subscriber getSubscriber() {
+        if (getInstance().subscriber == null) {
+            getInstance().subscriber = new SubscriberImpl();
+        }
         return getInstance().subscriber;
     }
 
     public static Broadcaster getBroadcaster() {
+        if (getInstance().broadcaster == null) {
+            getInstance().broadcaster = new BroadcasterImpl();
+        }
         return getInstance().broadcaster;
     }
 
     public static SyncService getSyncService() {
+        if (getInstance().syncService == null) {
+            getInstance().syncService = new SyncService();
+        }
         return getInstance().syncService;
     }
 
