@@ -33,12 +33,7 @@ public class SyncService {
 
     public void waitForOthers() {
         while (sender.getQueue().size() > 0) {
-            try {
-                System.out.println(sender.getQueue().size());
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // ignore
-            }
+            // wait
         }
         ServiceLocator.getBroadcaster().sendSync();
 
