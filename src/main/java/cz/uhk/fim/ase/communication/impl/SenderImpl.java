@@ -1,5 +1,7 @@
 package cz.uhk.fim.ase.communication.impl;
 
+import cz.uhk.fim.ase.common.NamedThreadFactory;
+import cz.uhk.fim.ase.communication.MessagesQueue;
 import cz.uhk.fim.ase.communication.Sender;
 import cz.uhk.fim.ase.communication.impl.helpers.ContextHolder;
 import cz.uhk.fim.ase.communication.impl.helpers.MessagesConverter;
@@ -11,8 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
@@ -20,109 +26,97 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SenderImpl implements Sender {
 
     private static Logger logger = LoggerFactory.getLogger(SenderImpl.class);
-    int maxConnectionPerNode = 10;
-    private Map<String, Worker[]> workers = new ConcurrentHashMap<>();
     private String myself = ServiceLocator.getConfig().system.listenerAddress;
-    private Worker listenerBroker = new LoopBackWorker();
+    private Deque<Job> queue = new ConcurrentLinkedDeque<>();
+
+    int workersCount = 10; // TODO config
+
+    public SenderImpl() {
+        ExecutorService executor = Executors.newFixedThreadPool(workersCount, new NamedThreadFactory("sender-worker-thread"));
+        for (int count = 1; count <= workersCount; count++) {
+            executor.execute(new Worker());
+        }
+    }
+
+    public Deque<Job> getQueue() {
+        return queue;
+    }
 
     public void send(MessageEntity message) {
-        byte[] bytes = MessagesConverter.convertObjectToBytes(message);
-
         for (AgentEntity receiver : message.getReceivers()) {
-            Worker worker = getWorker(receiver.getNode());
-            while (worker == null) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-                worker = getWorker(receiver.getNode());
-            }
-            worker.send(bytes);
+            queue.addLast(new Job(receiver.getNode(), message));
         }
     }
 
     public void sendWelcome(WelcomeMessage message, String node) {
-        Worker worker = getWorker(node);
-        while (worker == null) {
-            worker = getWorker(node);
-        }
-        worker.send(MessagesConverter.convertObjectToBytes(message));
+        queue.addLast(new Job(node, message));
     }
 
-    private synchronized Worker getWorker(String address) {
-        if (address.equals(myself)) { // loop-back
-            return listenerBroker;
-        }
+    public class Worker implements Runnable {
 
-        Worker[] queue;
+        private Map<String, ZMQ.Socket> sockets = new HashMap<>();
+        private MessagesQueue messagesQueue = ServiceLocator.getMessagesQueue();
 
-        if (!workers.containsKey(address)) {
-            queue = new Worker[maxConnectionPerNode];
-            queue[0] = new Worker(address);
-            workers.put(address, queue);
-            return queue[0];
-        }
-
-        queue = workers.get(address);
-        int number;
-        for (number = 0; number < maxConnectionPerNode; number++) {
-            if (queue[number] != null && queue[number].isReady()) {
-                return queue[number];
+        @Override
+        public void run() {
+            while (!Thread.currentThread().isInterrupted()) {
+                Job job = queue.pollFirst();
+                if (job != null) {
+                    if (job.getAddress().equals(myself) && job.getMessage() instanceof MessageEntity) {
+                        messagesQueue.addMessage((MessageEntity) job.getMessage());
+                    }
+                    byte[] data = MessagesConverter.convertObjectToBytes(job.getMessage());
+                    send(job.getAddress(), data);
+                }
             }
         }
 
-        if (queue.length < maxConnectionPerNode) {
-            queue[number] = new Worker(address);
-            workers.put(address, queue);
-            return queue[number];
+        private void send(String address, byte[] data) {
+            ZMQ.Socket socket = getSocket(address);
+            socket.send(data, 0);
         }
 
-        return null;
-    }
-
-    public class Worker {
-
-        private boolean ready = true;
-        private String address;
-        protected ZMQ.Socket socket = ContextHolder.getContext().socket(ZMQ.PUSH);
-
-        public Worker(String address) {
-            this.address = address;
-            connect();
-        }
-
-        public synchronized boolean isReady() {
-            return ready;
-        }
-
-        public void send(byte[] bytes) {
-            ready = false;
-            if (!socket.send(bytes, 0)) {
-                // connection failed - reconnect
-                socket.close();
-                connect();
-                logger.error("Connection failed - reconnect");
+        private ZMQ.Socket getSocket(String address) {
+            ZMQ.Socket socket;
+            if (!sockets.containsKey(address)) {
+                socket = createSocket(address);
+                sockets.put(address, socket);
+                return socket;
             }
-            ready = true;
+
+            socket = sockets.get(address);
+            if (socket == null) {
+                socket = createSocket(address);
+                sockets.put(address, socket);
+            }
+
+            return socket;
         }
 
-        protected void connect() {
+        private ZMQ.Socket createSocket(String address) {
+            ZMQ.Socket socket = ContextHolder.getContext().socket(ZMQ.PUSH);
             socket.connect("tcp://" + address);
             socket.setSendTimeOut(1000);
             socket.setReceiveTimeOut(1000);
+            return socket;
         }
     }
 
-    public class LoopBackWorker extends Worker {
+    public class Job {
+        private String address;
+        private Object message;
 
-        public LoopBackWorker() {
-            super(null);
+        public Job(String address, Object message) {
+            this.address = address;
+            this.message = message;
         }
 
-        @Override
-        protected void connect() {
-            socket = ((ListenerImpl) ServiceLocator.getListener()).getBroker();
+        public String getAddress() {
+            return address;
+        }
+
+        public Object getMessage() {
+            return message;
         }
     }
 }
