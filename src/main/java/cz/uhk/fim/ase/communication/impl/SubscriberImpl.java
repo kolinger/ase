@@ -27,7 +27,7 @@ public class SubscriberImpl implements Subscriber {
         public void run() {
             bind();
         }
-    });
+    }, "subscriber-thread");
     private String myself = ServiceLocator.getConfig().system.listenerAddress;
 
     public void shutdown() {

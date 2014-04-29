@@ -26,7 +26,7 @@ public class ListenerImpl implements Listener {
         public void run() {
             bind();
         }
-    });
+    }, "listener-thread");
 
     public void shutdown() {
         thread.interrupt();
@@ -57,7 +57,7 @@ public class ListenerImpl implements Listener {
         int workersCount = 10;
         Thread[] threads = new Thread[workersCount];
         for (int count = 0; count < workersCount; count++) {
-            threads[count] = new Thread(new Worker());
+            threads[count] = new Thread(new Worker(), "listener-worker-thread" + (count + 1));
             threads[count].start();
         }
 

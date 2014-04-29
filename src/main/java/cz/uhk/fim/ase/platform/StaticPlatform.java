@@ -22,6 +22,7 @@ public class StaticPlatform extends Platform {
                     }
                 }
             });
+            threads[index].setName("agent-registration-thread-" + (index + 1));
             threads[index].start();
         }
 
