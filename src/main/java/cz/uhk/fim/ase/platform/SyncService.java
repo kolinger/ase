@@ -45,7 +45,7 @@ public class SyncService {
         do {
             done = true;
             for (Long nodeTick : nodesStatuses.values()) {
-                if (nodeTick.compareTo(tick) <= 0) {
+                if (nodeTick.compareTo(tick) < 0) {
                     done = false;
                     break;
                 }
