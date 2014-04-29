@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
@@ -29,6 +28,7 @@ public class SubscriberImpl implements Subscriber {
             bind();
         }
     });
+    private String myself = ServiceLocator.getConfig().system.listenerAddress;
 
     public void shutdown() {
         thread.interrupt();
@@ -59,10 +59,11 @@ public class SubscriberImpl implements Subscriber {
 
         if (type == 1) { // hello
             HelloMessage message = (HelloMessage) MessagesConverter.convertBytesToObject(bytes);
-            if (message != null && !message.getNode().equals(address)) {
+            if (message != null && !message.getNode().equals(myself)) {
                 for (AgentEntity agent : message.getAgents()) {
                     Registry.get().register(agent);
                 }
+                logger.debug("Received hello message from " + address);
                 ServiceLocator.getSyncService().updateNodeState(message.getNode(), message.getTick());
 
                 WelcomeMessage response = new WelcomeMessageImpl();
@@ -73,7 +74,8 @@ public class SubscriberImpl implements Subscriber {
             }
         } else if (type == 3) { // sync
             SyncMessage message = (SyncMessage) MessagesConverter.convertBytesToObject(bytes);
-            if (message != null && !message.getNode().equals(address)) {
+            if (message != null && !message.getNode().equals(myself)) {
+                logger.debug("Received sync message from " + address);
                 ServiceLocator.getSyncService().updateNodeState(message.getNode(), message.getTick());
             }
         }

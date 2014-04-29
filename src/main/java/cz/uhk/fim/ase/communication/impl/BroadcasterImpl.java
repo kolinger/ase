@@ -9,6 +9,8 @@ import cz.uhk.fim.ase.model.SyncMessage;
 import cz.uhk.fim.ase.model.impl.HelloMessageImpl;
 import cz.uhk.fim.ase.model.impl.SyncMessageImpl;
 import cz.uhk.fim.ase.platform.ServiceLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
 import java.util.Set;
@@ -18,41 +20,44 @@ import java.util.Set;
  */
 public class BroadcasterImpl implements Broadcaster {
 
+    private static Logger logger = LoggerFactory.getLogger(Broadcaster.class);
     private ZMQ.Socket socket;
 
     public void sendSync() {
+        logger.debug("Sending sync message");
         SyncMessage message = new SyncMessageImpl();
         message.setTick(ServiceLocator.getSyncService().getTick());
         message.setNode(ServiceLocator.getConfig().system.listenerAddress);
 
-        ZMQ.Socket socket = createSocket();
+        ZMQ.Socket socket = getSocket();
         socket.send(MessagesConverter.convertObjectToBytes(message), 0);
-        socket.close();
     }
 
     public void sendHello(Set<AgentEntity> agents) {
+        logger.debug("Sending hello message");
         HelloMessage message = new HelloMessageImpl();
         message.setTick(ServiceLocator.getSyncService().getTick());
         message.setNode(ServiceLocator.getConfig().system.listenerAddress);
         message.setAgents(agents);
 
-        ZMQ.Socket socket = createSocket();
+        ZMQ.Socket socket = getSocket();
         socket.send(MessagesConverter.convertObjectToBytes(message), 0);
-        socket.close();
     }
 
     public void sendBye() {
+        logger.debug("Sending bye message");
         SyncMessage message = new SyncMessageImpl();
         message.setNode(ServiceLocator.getConfig().system.listenerAddress);
 
-        ZMQ.Socket socket = createSocket();
+        ZMQ.Socket socket = getSocket();
         socket.send(MessagesConverter.convertObjectToBytes(message), 0);
-        socket.close();
     }
 
-    private ZMQ.Socket createSocket() {
-        ZMQ.Socket socket = ContextHolder.getContext().socket(ZMQ.DEALER);
-        socket.connect("tcp://" + ServiceLocator.getConfig().system.broadcasterAddress);
+    private ZMQ.Socket getSocket() {
+        if (socket == null) {
+            socket = ContextHolder.getContext().socket(ZMQ.DEALER);
+            socket.connect("tcp://" + ServiceLocator.getConfig().system.broadcasterAddress);
+        }
         return socket;
     }
 }
