@@ -48,6 +48,9 @@ public class SubscriberImpl implements Subscriber {
 
         while (!Thread.currentThread().isInterrupted()) {
             byte[] bytes = subscriber.recv(0);
+            if (bytes == null || bytes.length == 0) {
+                continue;
+            }
             handleBytes(bytes, address);
         }
 
