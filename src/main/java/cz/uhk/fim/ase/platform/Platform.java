@@ -1,5 +1,6 @@
 package cz.uhk.fim.ase.platform;
 
+import cz.uhk.fim.ase.common.NamedThreadFactory;
 import cz.uhk.fim.ase.communication.Listener;
 import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.platform.agents.Agent;
@@ -13,7 +14,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
@@ -26,15 +26,9 @@ abstract public class Platform {
     private ExecutorService executor;
 
     public Platform() {
-        executor = Executors.newFixedThreadPool(ServiceLocator.getConfig().system.computeThreads, new ThreadFactory() {
-
-            private int count = 0;
-
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, "agent-compute-thread-" + (++count));
-            }
-        });
+        executor = Executors.newFixedThreadPool(
+                ServiceLocator.getConfig().system.computeThreads,
+                new NamedThreadFactory("agent-compute-thread"));
     }
 
     /**
@@ -42,7 +36,6 @@ abstract public class Platform {
      */
 
     public void addAgent(Agent agent) {
-        logger.debug("Registering agent {}", agent.getEntity());
         agents.put(agent.getEntity().getId(), agent);
         Registry.get().register(agent.getEntity());
     }
