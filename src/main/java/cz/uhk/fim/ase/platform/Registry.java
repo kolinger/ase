@@ -87,7 +87,7 @@ public class Registry {
     }
 
     public AgentEntity getRandomLocalByType(String type) {
-        List<AgentEntity> agents = typeIndex.get(type);
+        List<AgentEntity> agents = typeLocalIndex.get(type);
         int size = agents.size();
         if (size == 0) {
             return null;
@@ -98,7 +98,7 @@ public class Registry {
     }
 
     public AgentEntity getRandomForeignByType(String type) {
-        List<AgentEntity> agents = typeIndex.get(type);
+        List<AgentEntity> agents = typeForeignIndex.get(type);
         int size = agents.size();
         if (size == 0) {
             return null;
