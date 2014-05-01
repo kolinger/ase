@@ -2,15 +2,11 @@
 <c:configuration xmlns:c="http://fim.uhk.cz/ase/configuration.xsd">
     <environment>
         <agentsCount>10000</agentsCount>
-
-        <finalTick>100000</finalTick>
         <reportEveryTick>100000</reportEveryTick>
+        <finalTick>100000</finalTick>
     </environment>
 
     <system>
-        <computeThreads>100</computeThreads>
-        <communicationThreads>10</communicationThreads>
-
         <subscriberAddress>127.0.0.1:10000</subscriberAddress>
         <broadcasterAddress>127.0.0.1:20000</broadcasterAddress>
         <listenerAddress>0.0.0.0:30000</listenerAddress>

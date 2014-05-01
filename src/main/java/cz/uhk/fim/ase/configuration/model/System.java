@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
  */
-@XmlType(namespace = "http://fim.uhk.cz/ase/configuration.xsd")
+@XmlType(namespace = "http://fim.uhk.cz/ase/configuration.xsd", propOrder = {})
 public class System {
 
     public Integer computeThreads = 10;
