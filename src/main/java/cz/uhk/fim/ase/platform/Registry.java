@@ -18,26 +18,29 @@ public class Registry {
 
     final private List<AgentEntity> agents = new ArrayList<>();
     private List<AgentEntity> localIndex = new ArrayList<>();
+    private List<AgentEntity> foreignIndex = new ArrayList<>();
     private Map<String, List<AgentEntity>> typeIndex = new HashMap<>();
 
     public void register(AgentEntity agent) {
         synchronized (agents) {
             if (!agents.contains(agent)) {
+                // local and foreign index
                 if (agent.getNode().equals(ServiceLocator.getConfig().system.myAddress)) {
-                    // local index
                     localIndex.add(agent);
-
-                    // type index
-                    String type = agent.getProperties().get("type");
-                    List<AgentEntity> agentsList;
-                    if (typeIndex.containsKey(type)) {
-                        agentsList = typeIndex.get(type);
-                    } else {
-                        agentsList = new ArrayList<>();
-                        typeIndex.put(type, agentsList);
-                    }
-                    agentsList.add(agent);
+                } else {
+                    foreignIndex.add(agent);
                 }
+
+                // type index
+                String type = agent.getProperties().get("type");
+                List<AgentEntity> agentsList;
+                if (typeIndex.containsKey(type)) {
+                    agentsList = typeIndex.get(type);
+                } else {
+                    agentsList = new ArrayList<>();
+                    typeIndex.put(type, agentsList);
+                }
+                agentsList.add(agent);
                 agents.add(agent);
             }
         }
@@ -60,5 +63,9 @@ public class Registry {
 
     public List<AgentEntity> getLocalAgents() {
         return localIndex;
+    }
+
+    public List<AgentEntity> getForeignAgents() {
+        return foreignIndex;
     }
 }
