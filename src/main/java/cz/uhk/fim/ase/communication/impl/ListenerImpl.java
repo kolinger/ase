@@ -84,8 +84,8 @@ public class ListenerImpl implements Listener {
         if (type == 0) { // direct
             MessageEntity message = (MessageEntity) MessagesConverter.convertBytesToObject(bytes);
             if (message != null) {
-                ServiceLocator.getMessagesQueue().addMessage(message);
                 monitor.increaseReceivedMessagesCount(1);
+                ServiceLocator.getMessagesQueue().addMessage(message);
             }
         } else if (type == 2) { // welcome
             WelcomeMessage welcomeMessage = (WelcomeMessage) MessagesConverter.convertBytesToObject(bytes);

@@ -50,7 +50,7 @@ public class Monitor {
     }
 
     public Long getPlatformAgentsCount() {
-        return -1L;
+        return (long) ServiceLocator.getRegistry().getLocalAgents().size();
     }
 
     public Long getTotalAgentsCount() {
