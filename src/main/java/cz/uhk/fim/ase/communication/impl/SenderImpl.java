@@ -8,6 +8,7 @@ import cz.uhk.fim.ase.communication.impl.helpers.MessagesConverter;
 import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
 import cz.uhk.fim.ase.model.WelcomeMessage;
+import cz.uhk.fim.ase.platform.Monitor;
 import cz.uhk.fim.ase.platform.ServiceLocator;
 import org.zeromq.ZMQ;
 
@@ -24,6 +25,7 @@ import java.util.concurrent.Executors;
 public class SenderImpl implements Sender {
 
     private String myself = ServiceLocator.getConfig().system.myAddress;
+    private Monitor monitor = ServiceLocator.getMonitor();
     private Deque<Job> queue = new ConcurrentLinkedDeque<>();
 
     int workersCount = 10; // TODO config
@@ -40,6 +42,7 @@ public class SenderImpl implements Sender {
     }
 
     public void send(MessageEntity message) {
+        monitor.increaseSentMessagesCount(message.getReceivers().size());
         for (AgentEntity receiver : message.getReceivers()) {
             queue.addLast(new Job(receiver.getNode(), message));
         }

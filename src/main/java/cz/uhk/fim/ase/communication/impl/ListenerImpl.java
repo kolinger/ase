@@ -6,6 +6,7 @@ import cz.uhk.fim.ase.communication.impl.helpers.MessagesConverter;
 import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
 import cz.uhk.fim.ase.model.WelcomeMessage;
+import cz.uhk.fim.ase.platform.Monitor;
 import cz.uhk.fim.ase.platform.Registry;
 import cz.uhk.fim.ase.platform.ServiceLocator;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public class ListenerImpl implements Listener {
             bind();
         }
     }, "listener-thread");
+    private Monitor monitor = ServiceLocator.getMonitor();
 
     public void shutdown() {
         thread.interrupt();
@@ -83,6 +85,7 @@ public class ListenerImpl implements Listener {
             MessageEntity message = (MessageEntity) MessagesConverter.convertBytesToObject(bytes);
             if (message != null) {
                 ServiceLocator.getMessagesQueue().addMessage(message);
+                monitor.increaseReceivedMessagesCount(1);
             }
         } else if (type == 2) { // welcome
             WelcomeMessage welcomeMessage = (WelcomeMessage) MessagesConverter.convertBytesToObject(bytes);

@@ -36,6 +36,7 @@ public class ServiceLocator {
     private Broadcaster broadcaster;
 
     private SyncService syncService;
+    private Monitor monitor;
 
     // internal
     private static ServiceLocator instance;
@@ -95,6 +96,13 @@ public class ServiceLocator {
             getInstance().syncService = new SyncService();
         }
         return getInstance().syncService;
+    }
+
+    public static Monitor getMonitor() {
+        if (getInstance().monitor == null) {
+            getInstance().monitor = new Monitor();
+        }
+        return getInstance().monitor;
     }
 
     /**

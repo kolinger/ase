@@ -10,6 +10,7 @@ public class Environment {
 
     // misc
     public Integer agentsCount = 0;
+    public boolean monitorAgent = true;
 
     // ticks
     public Long finalTick;

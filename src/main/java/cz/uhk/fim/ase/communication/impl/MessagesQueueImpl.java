@@ -4,7 +4,6 @@ import cz.uhk.fim.ase.communication.MessagesQueue;
 import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
@@ -52,5 +51,14 @@ public class MessagesQueueImpl implements MessagesQueue {
             }
         }
         return null;
+    }
+
+    @Override
+    public long getSize() {
+        long sum = 0;
+        for (Queue<MessageEntity> agentQueue : queue.values()) {
+            sum += agentQueue.size();
+        }
+        return sum;
     }
 }

@@ -14,4 +14,6 @@ public interface MessagesQueue {
     MessageEntity search(String agentId);
 
     MessageEntity searchByType(String agentId, Integer type);
+
+    long getSize();
 }

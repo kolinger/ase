@@ -3,7 +3,9 @@ package cz.uhk.fim.ase.platform;
 import cz.uhk.fim.ase.common.NamedThreadFactory;
 import cz.uhk.fim.ase.communication.Listener;
 import cz.uhk.fim.ase.model.AgentEntity;
+import cz.uhk.fim.ase.model.impl.AgentEntityImpl;
 import cz.uhk.fim.ase.platform.agents.Agent;
+import cz.uhk.fim.ase.platform.agents.MonitorAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,7 @@ abstract public class Platform {
 
     private Map<String, Agent> agents = new ConcurrentHashMap<String, Agent>();
     private ExecutorService executor;
+    private Monitor monitor = ServiceLocator.getMonitor();
 
     public Platform() {
         executor = Executors.newFixedThreadPool(
@@ -64,6 +67,13 @@ abstract public class Platform {
 
         // setup and execute agents tasks
         logger.info("Setting up platform");
+        if (ServiceLocator.getConfig().environment.monitorAgent) {
+            AgentEntity monitorAgentEntity = new AgentEntityImpl();
+            monitorAgentEntity.setId("monitor-agent");
+            monitorAgentEntity.setNode(ServiceLocator.getConfig().system.myAddress);
+            Agent monitorAgent = new MonitorAgent(monitorAgentEntity);
+            addAgent(monitorAgent);
+        }
         setup();
         while (nextTick()) {
             // run agents, run!
@@ -92,6 +102,7 @@ abstract public class Platform {
         // run tasks
         try {
             logger.debug("Waiting for agents");
+            monitor.increaseTasksCount(todoList.size());
             executor.invokeAll(todoList);
         } catch (InterruptedException e) {
             logger.error("Agents execution interrupted");
