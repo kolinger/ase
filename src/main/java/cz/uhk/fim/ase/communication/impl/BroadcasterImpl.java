@@ -30,7 +30,7 @@ public class BroadcasterImpl implements Broadcaster {
         message.setNode(ServiceLocator.getConfig().system.myAddress);
 
         ZMQ.Socket socket = getSocket();
-        socket.send(MessagesConverter.convertObjectToBytes(message), 0);
+        socket.send(MessagesConverter.convertObjectToBytes(message), ZMQ.NOBLOCK);
     }
 
     public void sendHello(Set<AgentEntity> agents) {
@@ -41,7 +41,7 @@ public class BroadcasterImpl implements Broadcaster {
         message.setAgents(agents);
 
         ZMQ.Socket socket = getSocket();
-        socket.send(MessagesConverter.convertObjectToBytes(message), 0);
+        socket.send(MessagesConverter.convertObjectToBytes(message), ZMQ.NOBLOCK);
     }
 
     public void sendBye() {
@@ -50,7 +50,7 @@ public class BroadcasterImpl implements Broadcaster {
         message.setNode(ServiceLocator.getConfig().system.myAddress);
 
         ZMQ.Socket socket = getSocket();
-        socket.send(MessagesConverter.convertObjectToBytes(message), 0);
+        socket.send(MessagesConverter.convertObjectToBytes(message), ZMQ.NOBLOCK);
     }
 
     private ZMQ.Socket getSocket() {

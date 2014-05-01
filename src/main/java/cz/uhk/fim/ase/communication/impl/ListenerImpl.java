@@ -63,7 +63,7 @@ public class ListenerImpl implements Listener {
 
         while (!Thread.currentThread().isInterrupted()) {
             ready = true;
-            byte[] bytes = listener.recv(ZMQ.NOBLOCK);
+            byte[] bytes = listener.recv(0);
             if (bytes == null || bytes.length == 0) {
                 continue;
             }
@@ -108,7 +108,7 @@ public class ListenerImpl implements Listener {
             worker.connect("inproc://listener-workers");
 
             while (!Thread.currentThread().isInterrupted()) {
-                byte[] bytes = worker.recv(ZMQ.NOBLOCK);
+                byte[] bytes = worker.recv(0);
                 if (bytes == null || bytes.length == 0) {
                     continue;
                 }
