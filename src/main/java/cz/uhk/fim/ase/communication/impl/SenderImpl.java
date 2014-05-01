@@ -9,8 +9,6 @@ import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
 import cz.uhk.fim.ase.model.WelcomeMessage;
 import cz.uhk.fim.ase.platform.ServiceLocator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
 import java.util.Deque;
@@ -25,7 +23,6 @@ import java.util.concurrent.Executors;
  */
 public class SenderImpl implements Sender {
 
-    private static Logger logger = LoggerFactory.getLogger(SenderImpl.class);
     private String myself = ServiceLocator.getConfig().system.myAddress;
     private Deque<Job> queue = new ConcurrentLinkedDeque<>();
 
