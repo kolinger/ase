@@ -12,6 +12,7 @@ public class System {
     public Integer zmqThreads = 10;
     public Integer senderWorkersCount = 10;
     public Integer listenerWorkersCount = 10;
+    public Integer registrationThreadsCount = 10;
 
     public String subscriberAddress = "127.0.0.1:10000";
     public String broadcasterAddress = "127.0.0.1:20000";

@@ -1,6 +1,5 @@
 package cz.uhk.fim.ase.configuration.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -12,6 +11,7 @@ public class Environment {
     // misc
     public Integer agentsCount = 0;
     public Boolean monitorAgent = true;
+    public Boolean benchmarkMode = false;
 
     // ticks
     public Long finalTick;
