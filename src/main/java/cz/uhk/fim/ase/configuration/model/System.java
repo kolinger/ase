@@ -8,8 +8,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(namespace = "http://fim.uhk.cz/ase/configuration.xsd")
 public class System {
 
-    public Integer computeThreads = 100;
-    public Integer communicationThreads = 10;
+    public Integer computeThreads = 10;
+    public Integer zmqThreads = 10;
+    public Integer senderWorkersCount = 10;
+    public Integer listenerWorkersCount = 10;
 
     public String subscriberAddress = "127.0.0.1:10000";
     public String broadcasterAddress = "127.0.0.1:20000";

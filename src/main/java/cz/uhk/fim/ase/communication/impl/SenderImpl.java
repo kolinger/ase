@@ -28,9 +28,8 @@ public class SenderImpl implements Sender {
     private Monitor monitor = ServiceLocator.getMonitor();
     private Deque<Job> queue = new ConcurrentLinkedDeque<>();
 
-    int workersCount = 10; // TODO config
-
     public SenderImpl() {
+        int workersCount = ServiceLocator.getConfig().system.senderWorkersCount;
         ExecutorService executor = Executors.newFixedThreadPool(workersCount, new NamedThreadFactory("sender-worker-thread"));
         for (int count = 1; count <= workersCount; count++) {
             executor.execute(new Worker());

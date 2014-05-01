@@ -14,7 +14,7 @@ public class ContextHolder {
 
     public static ZMQ.Context getContext() {
         if (context == null) {
-            context = ZMQ.context(ServiceLocator.getConfig().system.communicationThreads);
+            context = ZMQ.context(ServiceLocator.getConfig().system.zmqThreads);
         }
         return context;
     }

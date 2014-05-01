@@ -51,7 +51,7 @@ public class ListenerImpl implements Listener {
         ZMQ.Socket broker = ContextHolder.getContext().socket(ZMQ.PUSH);
         broker.bind("inproc://listener-workers");
 
-        int workersCount = 10;
+        int workersCount = ServiceLocator.getConfig().system.listenerWorkersCount;
         Thread[] threads = new Thread[workersCount];
         for (int count = 0; count < workersCount; count++) {
             threads[count] = new Thread(new Worker(), "listener-worker-thread" + (count + 1));

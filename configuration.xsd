@@ -13,6 +13,7 @@
   <xs:complexType name="environment">
     <xs:sequence>
       <xs:element minOccurs="0" name="agentsCount" type="xs:int"/>
+      <xs:element name="monitorAgent" type="xs:boolean"/>
       <xs:element minOccurs="0" name="finalTick" type="xs:long"/>
       <xs:element minOccurs="0" name="reportEveryTick" type="xs:long"/>
     </xs:sequence>
@@ -21,7 +22,9 @@
   <xs:complexType name="system">
     <xs:sequence>
       <xs:element minOccurs="0" name="computeThreads" type="xs:int"/>
-      <xs:element minOccurs="0" name="communicationThreads" type="xs:int"/>
+      <xs:element minOccurs="0" name="zmqThreads" type="xs:int"/>
+      <xs:element minOccurs="0" name="senderWorkersCount" type="xs:int"/>
+      <xs:element minOccurs="0" name="listenerWorkersCount" type="xs:int"/>
       <xs:element minOccurs="0" name="subscriberAddress" type="xs:string"/>
       <xs:element minOccurs="0" name="broadcasterAddress" type="xs:string"/>
       <xs:element minOccurs="0" name="listenerAddress" type="xs:string"/>
