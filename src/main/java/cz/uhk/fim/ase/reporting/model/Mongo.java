@@ -51,6 +51,9 @@ public class Mongo implements Model {
         Long tick = ServiceLocator.getSyncService().getTick();
 
         for (Agent agent : agents.values()) {
+            if (agent.getReportValues() == null) {
+                continue;
+            }
             for (Map.Entry<String, String> entry : agent.getReportValues().entrySet()) {
                 BasicDBObject document = new BasicDBObject();
                 document.put("tick", tick);

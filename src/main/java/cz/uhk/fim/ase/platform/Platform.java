@@ -2,6 +2,7 @@ package cz.uhk.fim.ase.platform;
 
 import cz.uhk.fim.ase.common.NamedThreadFactory;
 import cz.uhk.fim.ase.communication.Listener;
+import cz.uhk.fim.ase.communication.impl.SenderImpl;
 import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.impl.AgentEntityImpl;
 import cz.uhk.fim.ase.platform.agents.Agent;
@@ -27,6 +28,7 @@ abstract public class Platform {
     private Map<String, Agent> agents = new ConcurrentHashMap<String, Agent>();
     private ExecutorService executor;
     private Monitor monitor = ServiceLocator.getMonitor();
+    private SenderImpl sender = (SenderImpl) ServiceLocator.getSender();
 
     public Platform() {
         executor = Executors.newFixedThreadPool(
@@ -108,6 +110,9 @@ abstract public class Platform {
             logger.error("Agents execution interrupted");
         } finally {
             logger.debug("Agents are done");
+        }
+        while (sender.getQueue().size() > 0) {
+            // wait
         }
 
         // if this is report tick, create report

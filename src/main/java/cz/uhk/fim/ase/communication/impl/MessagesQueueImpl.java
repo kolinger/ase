@@ -3,6 +3,8 @@ package cz.uhk.fim.ase.communication.impl;
 import cz.uhk.fim.ase.communication.MessagesQueue;
 import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
+import cz.uhk.fim.ase.platform.Monitor;
+import cz.uhk.fim.ase.platform.ServiceLocator;
 
 import java.util.LinkedList;
 import java.util.Map;
@@ -15,8 +17,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MessagesQueueImpl implements MessagesQueue {
 
     private Map<String, Queue<MessageEntity>> queue = new ConcurrentHashMap<>();
+    private Monitor monitor = ServiceLocator.getMonitor();
 
     public void addMessage(MessageEntity message) {
+        monitor.increaseReceivedMessagesCount(message.getReceivers().size());
         for (AgentEntity receiver : message.getReceivers()) {
             Queue<MessageEntity> messages;
             if (queue.containsKey(receiver.getId())) {

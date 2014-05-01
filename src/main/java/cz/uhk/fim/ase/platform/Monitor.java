@@ -1,7 +1,5 @@
 package cz.uhk.fim.ase.platform;
 
-import java.rmi.registry.*;
-
 /**
  * Dummy storage for monitoring and system statistics
  *
@@ -13,7 +11,7 @@ public class Monitor {
     private long sentMessagesCount = 0;
     private long receivedMessagesCount = 0;
 
-    public void increaseTasksCount(long count) {
+    public synchronized void increaseTasksCount(long count) {
         tasksCount += count;
     }
 
@@ -21,7 +19,7 @@ public class Monitor {
         return tasksCount;
     }
 
-    public void increaseSentMessagesCount(long count) {
+    public synchronized void increaseSentMessagesCount(long count) {
         sentMessagesCount += count;
     }
 
@@ -29,7 +27,7 @@ public class Monitor {
         return sentMessagesCount;
     }
 
-    public void increaseReceivedMessagesCount(long count) {
+    public synchronized void increaseReceivedMessagesCount(long count) {
         receivedMessagesCount += count;
     }
 

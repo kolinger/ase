@@ -63,6 +63,7 @@ public class SenderImpl implements Sender {
                 if (job != null) {
                     if (job.getAddress().equals(myself) && job.getMessage() instanceof MessageEntity) {
                         messagesQueue.addMessage((MessageEntity) job.getMessage());
+                        continue;
                     }
                     byte[] data = MessagesConverter.convertObjectToBytes(job.getMessage());
                     send(job.getAddress(), data);
@@ -72,7 +73,7 @@ public class SenderImpl implements Sender {
 
         private void send(String address, byte[] data) {
             ZMQ.Socket socket = getSocket(address);
-            socket.send(data, 0);
+            socket.send(data, ZMQ.NOBLOCK);
         }
 
         private ZMQ.Socket getSocket(String address) {

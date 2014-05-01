@@ -1,5 +1,6 @@
 package cz.uhk.fim.ase.communication.impl;
 
+import cz.uhk.fim.ase.common.NamedThreadFactory;
 import cz.uhk.fim.ase.communication.Listener;
 import cz.uhk.fim.ase.communication.impl.helpers.ContextHolder;
 import cz.uhk.fim.ase.communication.impl.helpers.MessagesConverter;
@@ -12,6 +13,9 @@ import cz.uhk.fim.ase.platform.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Tomáš Kolinger <tomas@kolinger.name>
@@ -52,19 +56,18 @@ public class ListenerImpl implements Listener {
         broker.bind("inproc://listener-workers");
 
         int workersCount = ServiceLocator.getConfig().system.listenerWorkersCount;
-        Thread[] threads = new Thread[workersCount];
+        ExecutorService executor = Executors.newFixedThreadPool(workersCount, new NamedThreadFactory("listener-worker-thread"));
         for (int count = 0; count < workersCount; count++) {
-            threads[count] = new Thread(new Worker(), "listener-worker-thread" + (count + 1));
-            threads[count].start();
+            executor.submit(new Worker());
         }
 
         while (!Thread.currentThread().isInterrupted()) {
             ready = true;
-            byte[] bytes = listener.recv(0);
-            if (bytes == null || bytes.length == 0) { // connection failed?
+            byte[] bytes = listener.recv(ZMQ.NOBLOCK);
+            if (bytes == null || bytes.length == 0) {
                 continue;
             }
-            broker.send(bytes, 0);
+            broker.send(bytes, ZMQ.NOBLOCK);
         }
 
         broker.close();
@@ -84,7 +87,6 @@ public class ListenerImpl implements Listener {
         if (type == 0) { // direct
             MessageEntity message = (MessageEntity) MessagesConverter.convertBytesToObject(bytes);
             if (message != null) {
-                monitor.increaseReceivedMessagesCount(1);
                 ServiceLocator.getMessagesQueue().addMessage(message);
             }
         } else if (type == 2) { // welcome
@@ -96,6 +98,7 @@ public class ListenerImpl implements Listener {
                 ServiceLocator.getSyncService().updateNodeState(welcomeMessage.getNode(), welcomeMessage.getTick());
             }
         }
+
     }
 
     public class Worker implements Runnable {
@@ -105,7 +108,7 @@ public class ListenerImpl implements Listener {
             worker.connect("inproc://listener-workers");
 
             while (!Thread.currentThread().isInterrupted()) {
-                byte[] bytes = worker.recv(0);
+                byte[] bytes = worker.recv(ZMQ.NOBLOCK);
                 if (bytes == null || bytes.length == 0) {
                     continue;
                 }

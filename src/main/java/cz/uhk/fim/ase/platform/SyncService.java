@@ -12,7 +12,6 @@ public class SyncService {
 
     private Long tick = 1L;
     private Map<String, Long> nodesStatuses = new ConcurrentHashMap<>();
-    private SenderImpl sender = (SenderImpl) ServiceLocator.getSender();
 
     public Long getTick() {
         return tick;
@@ -31,9 +30,6 @@ public class SyncService {
     }
 
     public void waitForOthers() {
-        while (sender.getQueue().size() > 0) {
-            // wait
-        }
         ServiceLocator.getBroadcaster().sendSync();
 
         if (nodesStatuses.size() == 0) { // standalone mode
