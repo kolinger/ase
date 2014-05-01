@@ -4,7 +4,6 @@ import cz.uhk.fim.ase.model.AgentEntity;
 import cz.uhk.fim.ase.model.MessageEntity;
 import cz.uhk.fim.ase.model.MessageType;
 import cz.uhk.fim.ase.model.impl.MessageEntityImpl;
-import cz.uhk.fim.ase.platform.Registry;
 import cz.uhk.fim.ase.platform.ServiceLocator;
 import cz.uhk.fim.ase.platform.agents.behaviours.InfiniteBehaviour;
 
