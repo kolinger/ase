@@ -16,6 +16,7 @@
     <xs:all>
       <xs:element minOccurs="0" name="agentsCount" type="xs:int"/>
       <xs:element minOccurs="0" name="monitorAgent" type="xs:boolean"/>
+      <xs:element minOccurs="0" name="benchmarkMode" type="xs:boolean"/>
       <xs:element minOccurs="0" name="finalTick" type="xs:long"/>
       <xs:element minOccurs="0" name="reportEveryTick" type="xs:long"/>
     </xs:all>
@@ -27,6 +28,7 @@
       <xs:element minOccurs="0" name="zmqThreads" type="xs:int"/>
       <xs:element minOccurs="0" name="senderWorkersCount" type="xs:int"/>
       <xs:element minOccurs="0" name="listenerWorkersCount" type="xs:int"/>
+      <xs:element minOccurs="0" name="registrationThreadsCount" type="xs:int"/>
       <xs:element minOccurs="0" name="subscriberAddress" type="xs:string"/>
       <xs:element minOccurs="0" name="broadcasterAddress" type="xs:string"/>
       <xs:element minOccurs="0" name="listenerAddress" type="xs:string"/>
