@@ -64,13 +64,13 @@ public class SubscriberImpl implements Subscriber {
             HelloMessage message = (HelloMessage) MessagesConverter.convertBytesToObject(bytes);
             if (message != null && !message.getNode().equals(myself)) {
                 for (AgentEntity agent : message.getAgents()) {
-                    Registry.get().register(agent);
+                    ServiceLocator.getRegistry().register(agent);
                 }
                 logger.debug("Received hello message from " + message.getNode());
                 ServiceLocator.getSyncService().updateNodeState(message.getNode(), message.getTick());
 
                 WelcomeMessage response = new WelcomeMessageImpl();
-                response.setAgents(new HashSet<AgentEntity>(Registry.get().getAgents()));
+                response.setAgents(new HashSet<AgentEntity>(ServiceLocator.getRegistry().getAgents()));
                 response.setNode(myself);
                 response.setTick(ServiceLocator.getSyncService().getTick());
                 ServiceLocator.getSender().sendWelcome(response, message.getNode());

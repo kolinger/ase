@@ -35,6 +35,7 @@ public class ServiceLocator {
     private Subscriber subscriber;
     private Broadcaster broadcaster;
 
+    private Registry registry;
     private SyncService syncService;
     private Monitor monitor;
 
@@ -103,6 +104,13 @@ public class ServiceLocator {
             getInstance().monitor = new Monitor();
         }
         return getInstance().monitor;
+    }
+
+    public static Registry getRegistry() {
+        if (getInstance().registry == null) {
+            getInstance().registry = new Registry();
+        }
+        return getInstance().registry;
     }
 
     /**

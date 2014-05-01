@@ -54,6 +54,6 @@ public class Monitor {
     }
 
     public Long getTotalAgentsCount() {
-        return (long) Registry.get().getAgents().size();
+        return (long) ServiceLocator.getRegistry().getAgents().size();
     }
 }

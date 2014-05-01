@@ -5,6 +5,7 @@ import cz.uhk.fim.ase.model.MessageEntity;
 import cz.uhk.fim.ase.model.MessageType;
 import cz.uhk.fim.ase.model.impl.MessageEntityImpl;
 import cz.uhk.fim.ase.platform.Registry;
+import cz.uhk.fim.ase.platform.ServiceLocator;
 import cz.uhk.fim.ase.platform.agents.behaviours.InfiniteBehaviour;
 
 import java.util.HashMap;
@@ -45,7 +46,7 @@ public class TestAgent2 extends Agent {
         protected void doCycle() {
             MessageEntity message = new MessageEntityImpl();
             message.setSender(getEntity());
-            AgentEntity random = Registry.get().getRandomAgent1();
+            AgentEntity random = ServiceLocator.getRegistry().getRandomByType("1");
             if (random != null) {
                 message.getReceivers().add(random);
                 message.setType(MessageType.REQUEST);

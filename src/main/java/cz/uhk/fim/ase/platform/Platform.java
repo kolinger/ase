@@ -40,7 +40,7 @@ abstract public class Platform {
 
     public void addAgent(Agent agent) {
         agents.put(agent.getEntity().getId(), agent);
-        Registry.get().register(agent.getEntity());
+        ServiceLocator.getRegistry().register(agent.getEntity());
     }
 
     /**

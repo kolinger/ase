@@ -91,7 +91,7 @@ public class ListenerImpl implements Listener {
             WelcomeMessage welcomeMessage = (WelcomeMessage) MessagesConverter.convertBytesToObject(bytes);
             if (welcomeMessage != null) {
                 for (AgentEntity agent : welcomeMessage.getAgents()) {
-                    Registry.get().register(agent);
+                    ServiceLocator.getRegistry().register(agent);
                 }
                 ServiceLocator.getSyncService().updateNodeState(welcomeMessage.getNode(), welcomeMessage.getTick());
             }
