@@ -8,7 +8,6 @@ import cz.uhk.fim.ase.model.HelloMessage;
 import cz.uhk.fim.ase.model.SyncMessage;
 import cz.uhk.fim.ase.model.WelcomeMessage;
 import cz.uhk.fim.ase.model.impl.WelcomeMessageImpl;
-import cz.uhk.fim.ase.platform.Registry;
 import cz.uhk.fim.ase.platform.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
