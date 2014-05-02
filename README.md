@@ -1,7 +1,7 @@
-ASE node
-========
+ASE platform
+============
 
-Agent Simulation Environment node
+Agent Simulation Environment platform
 
 Requirements
 ------------
