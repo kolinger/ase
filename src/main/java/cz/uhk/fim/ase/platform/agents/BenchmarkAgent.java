@@ -37,7 +37,7 @@ public class BenchmarkAgent extends Agent {
         protected void doCycle() {
             MessageEntity message = new MessageEntityImpl();
             message.setSender(getEntity());
-            message.getReceivers().add(ServiceLocator.getRegistry().getRandomForeignByType("benchmark"));
+            message.getReceivers().add(ServiceLocator.getRegistry().findRandomForeignByType("benchmark"));
             message.setType(MessageType.REQUEST);
             message.setContent("hello world!");
             send(message);

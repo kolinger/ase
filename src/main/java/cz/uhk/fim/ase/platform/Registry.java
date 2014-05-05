@@ -16,96 +16,33 @@ import java.util.Random;
 
 public class Registry {
 
-    final private List<AgentEntity> agents = new ArrayList<>();
+    final private List<AgentEntity> mainIndex = new ArrayList<>();
     private List<AgentEntity> localIndex = new ArrayList<>();
     private List<AgentEntity> foreignIndex = new ArrayList<>();
-    private Map<String, List<AgentEntity>> typeIndex = new HashMap<>();
-    private Map<String, List<AgentEntity>> typeLocalIndex = new HashMap<>();
-    private Map<String, List<AgentEntity>> typeForeignIndex = new HashMap<>();
+    private Map<String, Map<String, List<AgentEntity>>> parameterIndex = new HashMap<>();
+    private Map<String, Map<String, List<AgentEntity>>> parameterLocalIndex = new HashMap<>();
+    private Map<String, Map<String, List<AgentEntity>>> parameterForeignIndex = new HashMap<>();
 
     public void register(AgentEntity agent) {
-        synchronized (agents) {
-            if (!agents.contains(agent)) {
-                List<AgentEntity> agentsList;
-
-                // local and foreign index
-                if (agent.getNode().equals(ServiceLocator.getConfig().system.myAddress)) {
+        synchronized (mainIndex) {
+            if (!mainIndex.contains(agent)) {
+                if (agent.getNode().equals(ServiceLocator.getConfig().system.myAddress)) { // local indexes
                     localIndex.add(agent);
-
-                    // type index
-                    String type = agent.getProperties().get("type");
-                    if (typeLocalIndex.containsKey(type)) {
-                        agentsList = typeLocalIndex.get(type);
-                    } else {
-                        agentsList = new ArrayList<>();
-                        typeLocalIndex.put(type, agentsList);
-                    }
-                    agentsList.add(agent);
-                } else {
+                    addToParameterIndex(agent, parameterLocalIndex);
+                } else { // foreign indexes
                     foreignIndex.add(agent);
-
-                    // type index
-                    String type = agent.getProperties().get("type");
-                    if (typeForeignIndex.containsKey(type)) {
-                        agentsList = typeForeignIndex.get(type);
-                    } else {
-                        agentsList = new ArrayList<>();
-                        typeForeignIndex.put(type, agentsList);
-                    }
-                    agentsList.add(agent);
+                    addToParameterIndex(agent, parameterForeignIndex);
                 }
 
-                // type index
-                String type = agent.getProperties().get("type");
-                if (typeIndex.containsKey(type)) {
-                    agentsList = typeIndex.get(type);
-                } else {
-                    agentsList = new ArrayList<>();
-                    typeIndex.put(type, agentsList);
-                }
-                agentsList.add(agent);
-
-                // all
-                agents.add(agent);
+                // mixed indexes
+                addToParameterIndex(agent, parameterIndex);
+                mainIndex.add(agent);
             }
         }
     }
 
     public List<AgentEntity> getAgents() {
-        return agents;
-    }
-
-    public AgentEntity getRandomByType(String type) {
-        List<AgentEntity> agents = typeIndex.get(type);
-        int size = agents.size();
-        if (size == 0) {
-            return null;
-        }
-
-        int randomIndex = new Random().nextInt(size);
-        return agents.get(randomIndex);
-    }
-
-    public AgentEntity getRandomLocalByType(String type) {
-        List<AgentEntity> agents = typeLocalIndex.get(type);
-        int size = agents.size();
-        if (size == 0) {
-            return null;
-        }
-
-        int randomIndex = new Random().nextInt(size);
-        return agents.get(randomIndex);
-    }
-
-    public AgentEntity getRandomForeignByType(String type) {
-        List<AgentEntity> agents = typeForeignIndex.get(type);
-        int size = agents.size();
-        if (size == 0) {
-            return null;
-        }
-
-        int randomIndex = new Random().nextInt(size);
-        return agents.get(randomIndex);
+        return mainIndex;
     }
 
     public List<AgentEntity> getLocalAgents() {
@@ -114,5 +51,60 @@ public class Registry {
 
     public List<AgentEntity> getForeignAgents() {
         return foreignIndex;
+    }
+
+    public AgentEntity findRandomByParameter(Map<String, Map<String, List<AgentEntity>>> index, String key, String value) {
+        if (index.containsKey(key)) {
+            Map<String, List<AgentEntity>> wrapper = index.get(key);
+            if (wrapper.containsKey(value)) {
+                List<AgentEntity> items = wrapper.get(value);
+                if (items.size() > 0) {
+                    int randomIndex = new Random().nextInt(items.size());
+                    return items.get(randomIndex);
+                }
+            }
+        }
+        return null;
+    }
+
+    public AgentEntity findRandomByParameter(String key, String value) {
+        return findRandomByParameter(parameterIndex, key, value);
+    }
+
+    public AgentEntity findRandomByType(String type) {
+        return findRandomByParameter("type", type);
+    }
+
+    public AgentEntity findRandomLocalByType(String type) {
+        return findRandomByParameter(parameterLocalIndex, "type", type);
+    }
+
+    public AgentEntity findRandomForeignByType(String type) {
+        return findRandomByParameter(parameterForeignIndex, "type", type);
+    }
+
+    private void addToParameterIndex(AgentEntity agent, Map<String, Map<String, List<AgentEntity>>> index) {
+        for (Map.Entry<String, String> entry : agent.getProperties().entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            Map<String, List<AgentEntity>> wrapper;
+            if (!index.containsKey(key)) {
+                wrapper = new HashMap<String, List<AgentEntity>>();
+                index.put(key, wrapper);
+            } else {
+                wrapper = index.get(key);
+            }
+
+            List<AgentEntity> items;
+            if (!wrapper.containsKey(value)) {
+                items = new ArrayList<AgentEntity>();
+                wrapper.put(value, items);
+            } else {
+                items = wrapper.get(value);
+            }
+
+            items.add(agent);
+        }
     }
 }

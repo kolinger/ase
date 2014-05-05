@@ -45,7 +45,7 @@ public class TestAgent2 extends Agent {
         protected void doCycle() {
             MessageEntity message = new MessageEntityImpl();
             message.setSender(getEntity());
-            AgentEntity random = ServiceLocator.getRegistry().getRandomByType("1");
+            AgentEntity random = ServiceLocator.getRegistry().findRandomByType("1");
             if (random != null) {
                 message.getReceivers().add(random);
                 message.setType(MessageType.REQUEST);
